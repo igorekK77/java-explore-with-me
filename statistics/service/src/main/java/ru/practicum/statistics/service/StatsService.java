@@ -18,7 +18,7 @@ public class StatsService {
         Stats stats = new Stats();
         stats.setApp(createStatisticDto.getApp());
         stats.setIp(createStatisticDto.getIp());
-        stats.setDateCreated(createStatisticDto.getDateCreated());
+        stats.setDateCreated(createStatisticDto.getTimestamp());
         stats.setUri(createStatisticDto.getUri());
         Stats totalStats = statsStorage.save(stats);
         if (totalStats.getId() != null) {

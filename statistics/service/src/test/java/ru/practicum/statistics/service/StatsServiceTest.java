@@ -45,19 +45,19 @@ public class StatsServiceTest {
         stats = new Stats();
         stats.setApp(createStatisticDto.getApp());
         stats.setIp(createStatisticDto.getIp());
-        stats.setDateCreated(createStatisticDto.getDateCreated());
+        stats.setDateCreated(createStatisticDto.getTimestamp());
         stats.setUri(createStatisticDto.getUri());
 
         stats2 = new Stats();
         stats2.setApp(createStatisticDto.getApp());
         stats2.setIp(createStatisticDto.getIp());
-        stats2.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats2.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats2.setUri(createStatisticDto.getUri());
 
         stats3 = new Stats();
         stats3.setApp(createStatisticDto.getApp());
         stats3.setUri(createStatisticDto.getUri());
-        stats3.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats3.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats3.setIp("1.1.1.1");
         stats3.setDateCreated(LocalDateTime.parse(LocalDateTime.now().minusDays(2).format(formatter), formatter));
 
@@ -71,7 +71,7 @@ public class StatsServiceTest {
         Stats answerStats = new Stats();
         answerStats.setApp(createStatisticDto.getApp());
         answerStats.setIp(createStatisticDto.getIp());
-        answerStats.setDateCreated(createStatisticDto.getDateCreated());
+        answerStats.setDateCreated(createStatisticDto.getTimestamp());
         answerStats.setUri(createStatisticDto.getUri());
         answerStats.setId(1L);
         when(statsStorage.save(stats)).thenReturn(answerStats);
@@ -98,7 +98,7 @@ public class StatsServiceTest {
     @Test
     void testGetStatisticsWithEmptyUrisAndUniqueTrue() {
         stats.setId(1L);
-        stats.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats2.setId(2L);
         stats3.setId(3L);
         LocalDateTime start = LocalDateTime.parse(LocalDateTime.now().minusDays(3).format(formatter), formatter);
@@ -111,7 +111,7 @@ public class StatsServiceTest {
     @Test
     void testGetStatisticsWithEmptyUrisAndUniqueFalse() {
         stats.setId(1L);
-        stats.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats2.setId(2L);
         stats3.setId(3L);
         LocalDateTime start = LocalDateTime.parse(LocalDateTime.now().minusDays(3).format(formatter), formatter);
@@ -124,7 +124,7 @@ public class StatsServiceTest {
     @Test
     void testGetStatisticsWithUrisAndUniqueTrue() {
         stats.setId(1L);
-        stats.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats2.setId(2L);
         stats3.setId(3L);
         LocalDateTime start = LocalDateTime.parse(LocalDateTime.now().minusDays(3).format(formatter), formatter);
@@ -139,7 +139,7 @@ public class StatsServiceTest {
     @Test
     void testGetStatisticsWithUrisAndUniqueFalse() {
         stats.setId(1L);
-        stats.setDateCreated(createStatisticDto.getDateCreated().minusDays(2));
+        stats.setDateCreated(createStatisticDto.getTimestamp().minusDays(2));
         stats2.setId(2L);
         stats3.setId(3L);
         LocalDateTime start = LocalDateTime.parse(LocalDateTime.now().minusDays(3).format(formatter), formatter);

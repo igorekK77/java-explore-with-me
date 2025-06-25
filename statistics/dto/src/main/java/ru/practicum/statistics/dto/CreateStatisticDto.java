@@ -20,5 +20,5 @@ public class CreateStatisticDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(type = "string", pattern = "yyyy-MM-dd HH:mm:ss", example = "2025-06-24 19:45:00")
-    private LocalDateTime dateCreated;
+    private LocalDateTime timestamp;
 }

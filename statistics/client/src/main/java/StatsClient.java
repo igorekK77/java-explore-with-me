@@ -26,7 +26,7 @@ public class StatsClient {
         createStatisticDto.setApp(app);
         createStatisticDto.setUri(uri);
         createStatisticDto.setIp(ip);
-        createStatisticDto.setDateCreated(now);
+        createStatisticDto.setTimestamp(now);
 
         return restTemplate.postForObject(baseUri + "/hit", createStatisticDto, String.class);
     }

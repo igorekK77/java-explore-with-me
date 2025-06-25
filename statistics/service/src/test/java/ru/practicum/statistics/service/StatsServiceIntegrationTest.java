@@ -45,7 +45,7 @@ public class StatsServiceIntegrationTest {
 
     @Test
     void testGetStats() {
-        createStatisticDto.setDateCreated(LocalDateTime.parse(LocalDateTime.now().minusDays(2).format(formatter),
+        createStatisticDto.setTimestamp(LocalDateTime.parse(LocalDateTime.now().minusDays(2).format(formatter),
                 formatter));
         LocalDateTime start = LocalDateTime.parse(LocalDateTime.now().minusDays(3).format(formatter), formatter);
         LocalDateTime end = LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(formatter), formatter);
