@@ -41,7 +41,8 @@ public class StatsService {
             List<Stats> stats = statsStorage.findFilterStatsNotEmptyUris(start, end, uris);
             constructedStatistics(statsMap, stats, unique, usedIp);
         }
-        return new ArrayList<>(statsMap.values());
+        return statsMap.values().stream().sorted(Comparator.comparing(StatisticsDto::getHits))
+                .toList();
     }
 
     private void updateStatistics(Map<String, StatisticsDto> statsMap, Stats stats) {

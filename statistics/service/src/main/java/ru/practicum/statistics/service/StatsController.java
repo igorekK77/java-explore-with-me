@@ -8,6 +8,7 @@ import ru.practicum.statistics.dto.CreateStatisticDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,8 +26,11 @@ public class StatsController {
     public List<StatisticsDto> getStatistics(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                              LocalDateTime start, @RequestParam @DateTimeFormat(pattern =
                                                          "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-                                             @RequestParam List<String> uris,
+                                             @RequestParam(required = false) List<String> uris,
                                              @RequestParam(defaultValue = "false") boolean unique) {
+        if (uris == null) {
+            uris = new ArrayList<>();
+        }
         return statsService.getStatistics(start, end, uris, unique);
     }
 }
