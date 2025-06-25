@@ -10,6 +10,7 @@ services:
       - POSTGRES_DB=statsdb
     volumes:
       - ./pgdatastats:/var/lib/postgresql/data/
+      - ./statistics/service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   stats-server:
     build:
