@@ -17,10 +17,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9090:9090"
-#
-#  ewm-service:
-#    ports:
-#      - "8080:8080"
-#
-#  ewm-db:
-#    image: postgres:16.1
+
+  ewm-service:
+    ports:
+      - "8080:8080"
+
+  ewm-db:
+    image: postgres:16.1
