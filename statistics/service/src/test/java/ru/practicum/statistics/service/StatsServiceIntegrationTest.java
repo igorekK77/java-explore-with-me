@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.statistics.dto.CreateStatisticDto;
+import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
@@ -39,8 +40,8 @@ public class StatsServiceIntegrationTest {
 
     @Test
     void testCreateStats() {
-        String answer = statsService.createStats(createStatisticDto);
-        assertEquals("Информация сохранена", answer);
+        CreateStatisticResponseDto answer = statsService.createStats(createStatisticDto);
+        assertEquals(new CreateStatisticResponseDto("Информация сохранена"), answer);
     }
 
     @Test

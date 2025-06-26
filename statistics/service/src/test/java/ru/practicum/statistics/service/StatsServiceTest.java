@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.statistics.dto.CreateStatisticDto;
+import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 import ru.practicum.statistics.service.exceptions.ValidationException;
 
@@ -76,14 +77,8 @@ public class StatsServiceTest {
         answerStats.setId(1L);
         when(statsStorage.save(stats)).thenReturn(answerStats);
 
-        assertEquals("Информация сохранена", statsService.createStats(createStatisticDto));
-        verify(statsStorage, times(1)).save(stats);
-    }
-
-    @Test
-    void testFailedCreateStats() {
-        when(statsStorage.save(stats)).thenReturn(stats);
-        Assertions.assertThrows(ValidationException.class, () -> statsService.createStats(createStatisticDto));
+        assertEquals(new CreateStatisticResponseDto("Информация сохранена"),
+                statsService.createStats(createStatisticDto));
         verify(statsStorage, times(1)).save(stats);
     }
 

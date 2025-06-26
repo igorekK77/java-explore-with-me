@@ -1,4 +1,5 @@
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatsClient {
     private final RestTemplate restTemplate;
-    private final String baseUri = "http://localhost:9090";
+
+    @Value("${statistics.client.base-uri}")
+    private String baseUri;
+
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public String createStats(String app, String uri, String ip) {
@@ -38,8 +42,12 @@ public class StatsClient {
         StringBuilder totalUri = new StringBuilder(baseUri + "/stats" + "?start=" + startTime + "&end=" + endTime);
 
         if (!uris.isEmpty()) {
-            for (String uri : uris) {
-                totalUri.append("&uris=").append(URLEncoder.encode(uri, StandardCharsets.UTF_8));
+            totalUri.append("&uris=");
+            for (int i = 0; i < uris.size(); i++) {
+                totalUri.append(URLEncoder.encode(uris.get(i), StandardCharsets.UTF_8));
+                if (i < uris.size() - 1) {
+                    totalUri.append(",");
+                }
             }
         }
         totalUri.append("&unique=").append(unique);

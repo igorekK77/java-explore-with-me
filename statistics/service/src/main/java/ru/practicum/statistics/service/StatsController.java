@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.statistics.dto.CreateStatisticDto;
+import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createStatistic(@RequestBody CreateStatisticDto createStatisticDto) {
+    public CreateStatisticResponseDto createStatistic(@RequestBody CreateStatisticDto createStatisticDto) {
         return statsService.createStats(createStatisticDto);
     }
 

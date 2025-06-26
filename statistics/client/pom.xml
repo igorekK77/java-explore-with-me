@@ -16,13 +16,14 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dto.version>0.0.1-SNAPSHOT</dto.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>ru.practicum</groupId>
             <artifactId>dto</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${dto.version}</version>
         </dependency>
 
         <dependency>
@@ -73,7 +74,6 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.1.0</version>
         </dependency>
 
         <dependency>

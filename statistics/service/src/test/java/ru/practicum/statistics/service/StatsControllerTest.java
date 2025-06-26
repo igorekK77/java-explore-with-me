@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.statistics.dto.CreateStatisticDto;
+import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
@@ -50,9 +51,11 @@ public class StatsControllerTest {
         CreateStatisticDto createStatisticDto = new CreateStatisticDto("testService", "/test/1",
                 "0.0.0.0", LocalDateTime.parse(now.format(formatter), formatter));
         String jsonStatics = objectMapper.writeValueAsString(createStatisticDto);
-        when(statsService.createStats(createStatisticDto)).thenReturn("Информация сохранена");
+        when(statsService.createStats(createStatisticDto)).thenReturn(new
+                CreateStatisticResponseDto("Информация сохранена"));
         mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(jsonStatics))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response").value("Информация сохранена"));
         verify(statsService, times(1)).createStats(createStatisticDto);
     }
 
