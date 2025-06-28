@@ -1,14 +1,30 @@
 services:
-  stats-server:
-    ports:
-      - "9090:9090"
-
   stats-db:
     image: postgres:16.1
+    container_name: ewm-stats-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=statsdb
+    volumes:
+      - ./pgdatastats:/var/lib/postgresql/data/
+      - ./statistics/service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  stats-server:
+    build:
+      context: ./statistics
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
 
   ewm-service:
     ports:
       - "8080:8080"
+    build:
+      context: ./main
+      dockerfile: Dockerfile
 
   ewm-db:
     image: postgres:16.1
