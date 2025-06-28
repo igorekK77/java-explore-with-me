@@ -8,5 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateStatisticResponseDto {
-    private String response;
+    private Long id;
+
+    private String app;
+
+    private String uri;
 }

@@ -1,8 +1,9 @@
 package ru.practicum.statistics.service;
 
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.statistics.dto.CreateStatisticDto;
 import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
@@ -13,20 +14,21 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class StatsService {
     private final StatsStorage statsStorage;
 
+    @Transactional
     public CreateStatisticResponseDto createStats(CreateStatisticDto createStatisticDto) {
         Stats stats = new Stats();
         stats.setApp(createStatisticDto.getApp());
         stats.setIp(createStatisticDto.getIp());
         stats.setDateCreated(createStatisticDto.getTimestamp());
         stats.setUri(createStatisticDto.getUri());
-        statsStorage.save(stats);
-        return new CreateStatisticResponseDto("Информация сохранена");
+        Stats totalStats = statsStorage.save(stats);
+        return new CreateStatisticResponseDto(totalStats.getId(), totalStats.getApp(), totalStats.getUri());
     }
 
+    @Transactional(readOnly = true)
     public List<StatisticsDto> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris,
                                              boolean unique) {
         if (start.isAfter(end)) {
@@ -60,20 +62,15 @@ public class StatsService {
     private Map<String, StatisticsDto> constructedStatistics(List<Stats> stats, boolean unique) {
         Map<String, StatisticsDto> statsMap = new HashMap<>();
         Set<String> usedIp = new HashSet<>();
-        if (unique) {
-            for (Stats stat : stats) {
-                if (!usedIp.contains(stat.getIp())) {
-                    StatisticsDto statisticsDto = statsMap.get(stat.getUri());
-                    StatisticsDto updatedStatistics = updateStatistics(statisticsDto, stat);
-                    statsMap.put(stat.getUri(), updatedStatistics);
-                    usedIp.add(stat.getIp());
-                }
-            }
-        } else {
-            for (Stats stat : stats) {
+        for (Stats stat : stats) {
+            if (!unique || !usedIp.contains(stat.getIp())) {
                 StatisticsDto statisticsDto = statsMap.get(stat.getUri());
                 StatisticsDto updatedStatistics = updateStatistics(statisticsDto, stat);
                 statsMap.put(stat.getUri(), updatedStatistics);
+
+                if (unique) {
+                    usedIp.add(stat.getIp());
+                }
             }
         }
         return statsMap;

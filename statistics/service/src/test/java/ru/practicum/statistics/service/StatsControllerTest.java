@@ -51,11 +51,14 @@ public class StatsControllerTest {
         CreateStatisticDto createStatisticDto = new CreateStatisticDto("testService", "/test/1",
                 "0.0.0.0", LocalDateTime.parse(now.format(formatter), formatter));
         String jsonStatics = objectMapper.writeValueAsString(createStatisticDto);
-        when(statsService.createStats(createStatisticDto)).thenReturn(new
-                CreateStatisticResponseDto("Информация сохранена"));
+        CreateStatisticResponseDto createStatisticResponseDto = new CreateStatisticResponseDto(1L, "testService",
+                "/test/1");
+        when(statsService.createStats(createStatisticDto)).thenReturn(createStatisticResponseDto);
         mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(jsonStatics))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response").value("Информация сохранена"));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.app").value("testService"))
+                .andExpect(jsonPath("$.uri").value("/test/1"));
         verify(statsService, times(1)).createStats(createStatisticDto);
     }
 

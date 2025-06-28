@@ -41,7 +41,8 @@ public class StatsServiceIntegrationTest {
     @Test
     void testCreateStats() {
         CreateStatisticResponseDto answer = statsService.createStats(createStatisticDto);
-        assertEquals(new CreateStatisticResponseDto("Информация сохранена"), answer);
+        assertEquals(new CreateStatisticResponseDto(answer.getId(), createStatisticDto.getApp(),
+                createStatisticDto.getUri()), answer);
     }
 
     @Test

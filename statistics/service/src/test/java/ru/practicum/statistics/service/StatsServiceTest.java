@@ -77,7 +77,7 @@ public class StatsServiceTest {
         answerStats.setId(1L);
         when(statsStorage.save(stats)).thenReturn(answerStats);
 
-        assertEquals(new CreateStatisticResponseDto("Информация сохранена"),
+        assertEquals(new CreateStatisticResponseDto(answerStats.getId(), answerStats.getApp(), answerStats.getUri()),
                 statsService.createStats(createStatisticDto));
         verify(statsStorage, times(1)).save(stats);
     }

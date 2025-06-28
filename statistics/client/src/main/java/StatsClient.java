@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.statistics.dto.CreateStatisticDto;
+import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.net.URLEncoder;
@@ -24,7 +25,7 @@ public class StatsClient {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public String createStats(String app, String uri, String ip) {
+    public CreateStatisticResponseDto createStats(String app, String uri, String ip) {
         LocalDateTime now = LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter);
         CreateStatisticDto createStatisticDto = new CreateStatisticDto();
         createStatisticDto.setApp(app);
@@ -32,7 +33,7 @@ public class StatsClient {
         createStatisticDto.setIp(ip);
         createStatisticDto.setTimestamp(now);
 
-        return restTemplate.postForObject(baseUri + "/hit", createStatisticDto, String.class);
+        return restTemplate.postForObject(baseUri + "/hit", createStatisticDto, CreateStatisticResponseDto.class);
     }
 
     public List<StatisticsDto> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris,
