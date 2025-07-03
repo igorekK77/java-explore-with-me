@@ -1,0 +1,47 @@
+package ru.practicum.main.events.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.main.categories.Category;
+import ru.practicum.main.events.EventState;
+import ru.practicum.main.users.User;
+
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class EventDto {
+    private Long id;
+
+    private String annotation;
+
+    private Category category;
+
+    private int confirmedRequests;
+
+    private LocalDateTime createdOn;
+
+    private String description;
+
+    private LocalDateTime eventDate;
+
+    private User initiator;
+
+    private LocationDto location;
+
+    private boolean paid;
+
+    private int participantLimit;
+
+    private LocalDateTime publishedOn;
+
+    private boolean requestModeration;
+
+    private EventState state;
+
+    private String title;
+
+    private Long views;
+}

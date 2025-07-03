@@ -28,3 +28,13 @@ services:
 
   ewm-db:
     image: postgres:16.1
+    container_name: ewm-main-db
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=maindb
+    volumes:
+      - ./pgdatamain:/var/lib/postgresql/data/
+      - ./main/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
