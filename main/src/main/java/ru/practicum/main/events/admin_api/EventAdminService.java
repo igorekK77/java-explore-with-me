@@ -81,9 +81,9 @@ public class EventAdminService {
                         "публикации");
             }
         }
-        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.CANCEL_REVIEW) {
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.REJECT_EVENT) {
             if (event.getState() == EventState.WAITING) {
-                event.setState(EventState.CANCEL_REVIEW);
+                event.setState(EventState.REJECT_EVENT);
             } else {
                 throw new ForbiddenException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }

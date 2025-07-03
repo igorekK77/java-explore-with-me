@@ -84,7 +84,7 @@ public class RequestServiceTest {
     @Test
     void testCreateRequestWithNotPublishedEvent() {
         when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
-        event.setState(EventState.CANCEL_REVIEW);
+        event.setState(EventState.REJECT_EVENT);
         when(eventStorage.findById(1L)).thenReturn(Optional.of(event));
         Assertions.assertThrows(ConflictException.class, () -> requestService.createRequest(1L, 1L));
     }
