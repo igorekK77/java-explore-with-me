@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS events (
     category_id BIGINT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
     confirmed_requests INT NOT NULL DEFAULT 0,
     date_created TIMESTAMP NOT NULL,
-    description VARCHAR(800) NOT NULL,
+    description VARCHAR(3000) NOT NULL,
     event_date TIMESTAMP NOT NULL,
     initiator_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     location_lat DOUBLE PRECISION NOT NULL,
