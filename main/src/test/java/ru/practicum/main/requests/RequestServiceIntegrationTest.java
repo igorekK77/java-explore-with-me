@@ -89,6 +89,7 @@ public class RequestServiceIntegrationTest {
         UserDto userDto2 = userService.createUser(createUserDto2);
         CategoryDto categoryDto = categoryAdminService.createCategory(categoryCreateDto);
         eventCreatDto.setCategory(categoryDto.getId());
+        eventUpdateAdminDto.setCategory(categoryDto.getId());
         EventDto eventDto = eventPrivateService.createEvent(userDto2.getId(), eventCreatDto);
         eventAdminService.updateEvent(eventDto.getId(), eventUpdateAdminDto);
         RequestDto saveRequestDto = requestService.createRequest(userDto.getId(), eventDto.getId());
