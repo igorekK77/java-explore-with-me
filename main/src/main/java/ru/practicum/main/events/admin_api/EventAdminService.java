@@ -69,7 +69,9 @@ public class EventAdminService {
             throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
-        event.setEventDate(eventUpdateDto.getEventDate());
+        if (eventUpdateDto.getEventDate() != null) {
+            event.setEventDate(eventUpdateDto.getEventDate());
+        }
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.PUBLISH_EVENT) {
             if (event.getState() == EventState.WAITING) {
                 event.setState(EventState.PUBLISH_EVENT);
