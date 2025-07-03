@@ -43,7 +43,7 @@ public class RequestService {
         request.setInitiator(user);
         request.setEvent(event);
         if (!event.isRequestModeration()) {
-            request.setStatus(RequestState.APPROVED);
+            request.setStatus(RequestState.CONFIRMED);
         } else {
             request.setStatus(RequestState.PENDING);
         }

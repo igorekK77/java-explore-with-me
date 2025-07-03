@@ -101,10 +101,10 @@ public class RequestServiceTest {
     void testCreateRequestWithNotRequestModeration() {
         when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
         event.setRequestModeration(false);
-        request.setStatus(RequestState.APPROVED);
+        request.setStatus(RequestState.CONFIRMED);
         when(eventStorage.findById(1L)).thenReturn(Optional.of(event));
         when(requestStorage.save(any(Request.class))).thenReturn(request);
-        requestDto.setStatus(RequestState.APPROVED);
+        requestDto.setStatus(RequestState.CONFIRMED);
         RequestDto result = requestService.createRequest(1L, 1L);
         Assertions.assertEquals(requestDto.getId(), result.getId());
         Assertions.assertEquals(requestDto.getRequester(), result.getRequester());
