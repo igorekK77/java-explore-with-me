@@ -19,8 +19,9 @@ public class EventPublicController {
 
     @GetMapping
     public List<EventPublicDto> getEvents(@RequestParam String text, @RequestParam List<Long> categories,
-                                          @RequestParam boolean paid, @RequestParam @DateTimeFormat(pattern =
-                    "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart, @RequestParam @DateTimeFormat(pattern =
+                                          @RequestParam boolean paid, @RequestParam(required = false)
+                                              @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                          @RequestParam(required = false) @DateTimeFormat(pattern =
                     "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd, @RequestParam boolean onlyAvailable,
                                           @RequestParam SortType sort, @RequestParam(defaultValue = "0") int from,
                                           @RequestParam(defaultValue = "10") int size,

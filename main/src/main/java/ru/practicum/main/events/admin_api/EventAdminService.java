@@ -73,7 +73,7 @@ public class EventAdminService {
             event.setEventDate(eventUpdateDto.getEventDate());
         }
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.PUBLISH_EVENT) {
-            if (event.getState() == EventState.WAITING) {
+            if (event.getState() == EventState.SEND_TO_REVIEW) {
                 event.setState(EventState.PUBLISH_EVENT);
                 event.setPublishedOn(LocalDateTime.now());
             } else {
@@ -82,7 +82,7 @@ public class EventAdminService {
             }
         }
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.REJECT_EVENT) {
-            if (event.getState() == EventState.WAITING) {
+            if (event.getState() == EventState.SEND_TO_REVIEW) {
                 event.setState(EventState.REJECT_EVENT);
             } else {
                 throw new ForbiddenException("Cобытие можно отклонить, только если оно еще не опубликовано");

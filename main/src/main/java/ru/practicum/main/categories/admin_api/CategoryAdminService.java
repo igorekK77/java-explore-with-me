@@ -22,7 +22,9 @@ public class CategoryAdminService {
         if (categoryStorage.findByName(categoryCreateDto.getName()) != null) {
             throw new ConflictException("Категория " + categoryCreateDto.getName() + " уже существует!");
         }
-
+        if (categoryCreateDto.getName().isBlank()) {
+            throw new ValidationException("Имя категории не может быть пустым!");
+        }
         Category category = CategoryMapper.toCategoryFromCreateDto(categoryCreateDto);
         return CategoryMapper.toCategoryDto(categoryStorage.save(category));
     }
@@ -32,8 +34,11 @@ public class CategoryAdminService {
             throw new NotFoundException("Категории с Id " + catId + " не существует");
         }
         checkCategoryCreateDto(categoryUpdateDto);
-        if (categoryStorage.findByName(categoryUpdateDto.getName()) != null) {
-            throw new ConflictException("Категория " + categoryUpdateDto.getName() + " уже существует!");
+        if (categoryUpdateDto.getName() != null) {
+            Category category = categoryStorage.findByName(categoryUpdateDto.getName());
+            if (category != null && !category.getId().equals(catId)) {
+                throw new ConflictException("Категория " + categoryUpdateDto.getName() + " уже существует!");
+            }
         }
 
         Category category = CategoryMapper.toCategoryFromCreateDto(categoryUpdateDto);
@@ -49,8 +54,11 @@ public class CategoryAdminService {
     }
 
     private void checkCategoryCreateDto(CategoryCreateDto categoryCreateDto) {
-        if (categoryCreateDto.getName() == null || categoryCreateDto.getName().isEmpty()) {
+        if (categoryCreateDto.getName() == null || categoryCreateDto.getName().isBlank()) {
             throw new ValidationException("Имя не может быть пустым");
+        }
+        if (categoryCreateDto.getName().length() > 50) {
+            throw new ValidationException("Имя категории должно содержать не более 50 символов!");
         }
     }
 }

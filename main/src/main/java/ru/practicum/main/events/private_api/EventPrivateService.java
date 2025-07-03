@@ -40,13 +40,13 @@ public class EventPrivateService {
 
     public EventDto createEvent(Long userId, EventCreatDto eventCreatDto) {
         User initiator = checkExistsUser(userId);
-        if (eventCreatDto.getAnnotation() == null || eventCreatDto.getAnnotation().isEmpty()) {
+        if (eventCreatDto.getAnnotation() == null || eventCreatDto.getAnnotation().isBlank()) {
             throw new ValidationException("Аннотация события должна быть заполнена");
         }
-        if (eventCreatDto.getDescription() == null || eventCreatDto.getDescription().isEmpty()) {
+        if (eventCreatDto.getDescription() == null || eventCreatDto.getDescription().isBlank()) {
             throw new ValidationException("Описание события должно быть заполнено");
         }
-        if (eventCreatDto.getTitle() == null || eventCreatDto.getTitle().isEmpty()) {
+        if (eventCreatDto.getTitle() == null || eventCreatDto.getTitle().isBlank()) {
             throw new ValidationException("Заголовок события должен быть заполнен");
         }
         if (eventCreatDto.getEventDate() == null) {
@@ -136,6 +136,9 @@ public class EventPrivateService {
             event.setPaid(eventUpdateDto.getPaid());
         }
         if (eventUpdateDto.getParticipantLimit() != null) {
+            if (eventUpdateDto.getParticipantLimit() < 0) {
+                throw new ValidationException("Лимит пользователей не может быть отрицательным!");
+            }
             event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
         }
         if (eventUpdateDto.getRequestModeration() != null) {

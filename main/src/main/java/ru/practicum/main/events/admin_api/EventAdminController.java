@@ -17,14 +17,15 @@ public class EventAdminController {
     private final EventAdminService eventAdminService;
 
     @GetMapping
-    public List<EventDto> getEvents(@RequestParam List<Long> userIds, @RequestParam List<EventState> states,
-                                    @RequestParam List<Long> categoryIds,
+    public List<EventDto> getEvents(@RequestParam List<Long> users,
+                                    @RequestParam List<EventState> states,
+                                    @RequestParam List<Long> categories,
                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime
                                                 startTime, @RequestParam @DateTimeFormat(pattern =
                                     "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
                                     @RequestParam(defaultValue = "0") int from,
                                     @RequestParam(defaultValue = "10") int size) {
-        return eventAdminService.getEvents(userIds, states, categoryIds, startTime, endTime, from, size);
+        return eventAdminService.getEvents(users, states, categories, startTime, endTime, from, size);
     }
 
     @PatchMapping("/{eventId}")

@@ -30,11 +30,14 @@ public class CompilationAdminService {
     private final EventStorage eventStorage;
 
     public CompilationDto createCompilation(CompilationCreateDto compilationCreateDto) {
-        if (compilationCreateDto.getTitle() == null || compilationCreateDto.getTitle().isEmpty()) {
+        if (compilationCreateDto.getTitle() == null || compilationCreateDto.getTitle().isBlank()) {
             throw new ValidationException("Название подборки должно быть указано!");
         }
+        if (compilationCreateDto.getTitle().length() > 50) {
+            throw new ValidationException("Название подборки должно содержать не больше 50 символов!");
+        }
         if (compilationCreateDto.getPinned() == null) {
-            throw new ValidationException("Должно быть указано, закреплена ли подборка!");
+            compilationCreateDto.setPinned(false);
         }
         List<Compilation> compilations = compilationStorage.findAllByTitle(compilationCreateDto.getTitle());
         if (!compilations.isEmpty()) {
@@ -69,7 +72,7 @@ public class CompilationAdminService {
     public CompilationDto updateCompilation(Long compilationId, CompilationCreateDto compilationUpdateDto) {
         Compilation compilation = compilationStorage.findById(compilationId).orElseThrow(() ->
                 new NotFoundException("Подборка с ID = " + compilationId + " не найдена!"));
-        if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isEmpty() &&
+        if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank() &&
                 !compilationUpdateDto.getTitle().equals(compilation.getTitle())) {
             compilation.setTitle(compilationUpdateDto.getTitle());
         }

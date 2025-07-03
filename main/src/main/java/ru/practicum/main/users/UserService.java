@@ -17,8 +17,28 @@ public class UserService {
     private final UserStorage userStorage;
 
     public UserDto createUser(CreateUserDto createUserDto) {
-        if (createUserDto.getName().isBlank()) {
+        if (createUserDto.getName() == null || createUserDto.getName().isBlank()) {
             throw new ValidationException("Field: name. Error: must not be blank. Value: null");
+        }
+        if (createUserDto.getEmail() == null || createUserDto.getEmail().isBlank()) {
+            throw new ValidationException("Field: email. Error: must not be blank. Value: null");
+        }
+        if (createUserDto.getName().length() < 2 || createUserDto.getName().length() > 250) {
+            throw new ValidationException("Имя пользователя должно содержать от 2 до 250 символов");
+        }
+        if (createUserDto.getEmail().length() < 6 || createUserDto.getEmail().length() > 254) {
+            throw new ValidationException("Имя пользователя должно содержать от 6 до 254 символов");
+        }
+        if (!createUserDto.getEmail().contains("@")) {
+            throw new ValidationException("email должен содержать символ @");
+        }
+        String localPart = createUserDto.getEmail().substring(0, createUserDto.getEmail().indexOf("@"));
+        String domainPart = createUserDto.getEmail().substring(createUserDto.getEmail().indexOf("@") + 1);
+        if (localPart.length() > 64) {
+            throw new ValidationException("Основная часть email должна содержать не более 64 символов");
+        }
+        if (domainPart.length() > 63) {
+            throw new ValidationException("Домен email должен содержать не более 63 символов");
         }
         if (userStorage.findByEmail(createUserDto.getEmail()) != null) {
             throw new ConflictException("Email уже используется");
