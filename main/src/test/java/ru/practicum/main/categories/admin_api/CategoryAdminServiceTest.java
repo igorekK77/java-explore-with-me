@@ -31,15 +31,21 @@ public class CategoryAdminServiceTest {
 
     private CategoryCreateDto categoryCreateDto;
 
+    private CategoryCreateDto categoryCreateDto2;
+
     private CategoryDto categoryDto;
 
     private Category category;
+
+    private Category category2;
 
     @BeforeEach
     public void setUp() {
         categoryCreateDto = new CategoryCreateDto("test");
         categoryDto = new CategoryDto(1L, "test");
         category = new Category(1L, "test");
+        categoryCreateDto2 = new CategoryCreateDto("test2");
+        category2 = new Category(2L, "test2");
     }
 
     @Test
@@ -81,7 +87,7 @@ public class CategoryAdminServiceTest {
     @Test
     void testUpdateCategoryWithUsedName() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
-        when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category);
+        when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category2);
         Assertions.assertThrows(ConflictException.class, () -> categoryAdminService.updateCategory(1L,
                 categoryCreateDto));
     }
