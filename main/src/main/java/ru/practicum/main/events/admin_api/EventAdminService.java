@@ -64,7 +64,8 @@ public class EventAdminService {
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с ID = " + eventId + " не найдено!")));
         Event event = EventMapper.toEventFromEventDto(eventDto);
-        if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
+                .plusHours(2))) {
             throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
