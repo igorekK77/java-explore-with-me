@@ -7,7 +7,7 @@ import ru.practicum.main.compilations.dto.CompilationDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/compilation")
+@RequestMapping("/compilations")
 @RequiredArgsConstructor
 public class CompilationPublicController {
     private final CompilationPublicService compilationPublicService;
