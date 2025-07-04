@@ -12,11 +12,13 @@ import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.categories.dto.CategoryMapper;
+import ru.practicum.main.events.EventStorage;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -25,6 +27,9 @@ import static org.mockito.Mockito.*;
 public class CategoryAdminServiceTest {
     @Mock
     private CategoryStorage categoryStorage;
+
+    @Mock
+    private EventStorage eventStorage;
 
     @InjectMocks
     private CategoryAdminService categoryAdminService;
@@ -114,6 +119,7 @@ public class CategoryAdminServiceTest {
     @Test
     void testDeleteCategory() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
+        when(eventStorage.findAllByCategoryId(category.getId())).thenReturn(List.of());
         categoryAdminService.deleteCategory(1L);
         verify(categoryStorage, times(1)).deleteById(1L);
     }
