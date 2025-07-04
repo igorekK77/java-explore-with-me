@@ -92,6 +92,7 @@ public class RequestServiceTest {
     @Test
     void testCreateRequestWithLimitRequests() {
         when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
+        when(requestStorage.findAllByEventId(1L)).thenReturn(List.of(request));
         event.setConfirmedRequests(7);
         when(eventStorage.findById(1L)).thenReturn(Optional.of(event));
         Assertions.assertThrows(ConflictException.class, () -> requestService.createRequest(1L, 1L));

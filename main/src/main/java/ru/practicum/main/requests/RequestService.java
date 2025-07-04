@@ -35,10 +35,11 @@ public class RequestService {
         if (event.getState() != EventState.PUBLISH_EVENT) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии!");
         }
-        List<Request> requests = requestStorage.findAllByEventId(eventId);
-        if (requests.size() >= event.getParticipantLimit()) {
+        List<Request> requestsWithStatus = requestStorage.findAllByEventIdAndStatus(eventId, RequestState.CONFIRMED);
+        if (event.getParticipantLimit() > 0 && requestsWithStatus.size() >= event.getParticipantLimit()) {
             throw new ConflictException("У события достигнут лимит запросов на участие!");
         }
+        List<Request> requests = requestStorage.findAllByEventId(eventId);
         if (!requests.isEmpty()) {
             List<Long> existsRequestsIdByUsers = requests.stream().map(request -> request.getInitiator()
                     .getId()).toList();
