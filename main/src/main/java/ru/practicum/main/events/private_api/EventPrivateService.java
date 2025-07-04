@@ -106,7 +106,7 @@ public class EventPrivateService {
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
                 + initiator.getId())));
-        if (eventDto.getState() == EventState.PUBLISH_EVENT) {
+        if (eventDto.getState() == EventState.PUBLISH) {
             throw new ConflictException("Событие уже опубликованное, его нельзя изменить");
         }
         if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
@@ -125,7 +125,9 @@ public class EventPrivateService {
                 event.setCategory(categoryStorage.findById(eventUpdateDto.getCategory()).get());
             }
         }
-        event.setEventDate(eventUpdateDto.getEventDate());
+        if (eventUpdateDto.getEventDate() != null) {
+            event.setEventDate(eventUpdateDto.getEventDate());
+        }
         if (eventUpdateDto.getLocation() != null) {
             if (eventUpdateDto.getLocation().getLat() != null) {
                 event.setLocationLat(eventUpdateDto.getLocation().getLat());
@@ -191,13 +193,21 @@ public class EventPrivateService {
             if (request.getStatus() != RequestState.PENDING) {
                 throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания");
             }
-            if (event.getParticipantLimit() == event.getConfirmedRequests()) {
+
+            if (requestUpdateStatusDto.getStatus() != null && requestUpdateStatusDto.getStatus() == RequestState.REJECTED) {
                 request.setStatus(RequestState.REJECTED);
-                confirmedRequests.add(RequestMapper.toDto(request));
+                rejectedRequests.add(RequestMapper.toDto(request));
                 continue;
             }
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            rejectedRequests.add(RequestMapper.toDto(request));
+
+            if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
+                request.setStatus(RequestState.REJECTED);
+                rejectedRequests.add(RequestMapper.toDto(request));
+            } else {
+                request.setStatus(RequestState.CONFIRMED);
+                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                confirmedRequests.add(RequestMapper.toDto(request));
+            }
         }
         eventStorage.save(event);
         requestStorage.saveAll(requests);

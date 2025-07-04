@@ -55,7 +55,7 @@ public class RequestServiceTest {
         ownerUser = new User(2L, "test2@yandex.ru", "test2");
         event = new Event(1L, "test", category, 3, LocalDateTime.now(), "testD",
                 LocalDateTime.now().plusWeeks(2), ownerUser, 54.32, 45.23, true, 7,
-                LocalDateTime.now().plusDays(2), true, EventState.PUBLISH_EVENT, "test");
+                LocalDateTime.now().plusDays(2), true, EventState.PUBLISH, "test");
         requestDto = new RequestDto(1L, 1L, 1L, LocalDateTime.now(), RequestState.PENDING);
         request = new Request(1L, event, requestedUser, LocalDateTime.now(), RequestState.PENDING);
     }
@@ -167,7 +167,7 @@ public class RequestServiceTest {
         when(requestStorage.findById(1L)).thenReturn(Optional.of(request));
         when(requestStorage.save(any(Request.class))).thenReturn(request);
         RequestDto result = requestService.cancelRequest(1L, 1L);
-        requestDto.setStatus(RequestState.REJECTED);
+        requestDto.setStatus(RequestState.CANCELLED);
         Assertions.assertEquals(requestDto.getId(), result.getId());
         Assertions.assertEquals(requestDto.getRequester(), result.getRequester());
         Assertions.assertEquals(requestDto.getStatus(), result.getStatus());
