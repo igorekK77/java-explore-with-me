@@ -106,7 +106,7 @@ public class EventPrivateService {
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
                 + initiator.getId())));
-        if (eventDto.getState() == EventState.PUBLISH) {
+        if (eventDto.getState() == EventState.PUBLISH_EVENT) {
             throw new ConflictException("Событие уже опубликованное, его нельзя изменить");
         }
         if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()

@@ -78,7 +78,7 @@ public class RequestServiceIntegrationTest {
                 true,
                 10,
                 true,
-                EventState.PUBLISH,
+                EventState.PUBLISH_EVENT,
                 "Сплав на байдарках"
         );
     }

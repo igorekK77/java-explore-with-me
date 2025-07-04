@@ -63,18 +63,18 @@ public class EventPublicService {
         if (onlyAvailable) {
             if (rangeStart == null || rangeEnd == null) {
                 pageEvents = eventStorage.findAllByPublicParamsWithNotDates(text, categoryIds, paid,
-                        LocalDateTime.now(), EventState.PUBLISH, pageable);
+                        LocalDateTime.now(), EventState.PUBLISH_EVENT, pageable);
             } else {
                 pageEvents = eventStorage.findAllByPublicParams(text, categoryIds, paid, rangeStart, rangeEnd,
-                        EventState.PUBLISH, pageable);
+                        EventState.PUBLISH_EVENT, pageable);
             }
         } else {
             if (rangeStart == null || rangeEnd == null) {
                 pageEvents = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
-                        categoryIds, paid, LocalDateTime.now(), EventState.PUBLISH, pageable);
+                        categoryIds, paid, LocalDateTime.now(), EventState.PUBLISH_EVENT, pageable);
             } else {
                 pageEvents = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
-                        rangeStart, rangeEnd, EventState.PUBLISH, pageable);
+                        rangeStart, rangeEnd, EventState.PUBLISH_EVENT, pageable);
             }
         }
         List<EventDto> eventsDto = pageEvents.getContent().stream().map(EventMapper::toEventDto).toList();
@@ -92,7 +92,7 @@ public class EventPublicService {
     public EventDto getEventById(Long eventId, HttpServletRequest httpServletRequest) {
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие с ID = " + eventId + " не найдено!")));
-        if (eventDto.getState() != EventState.PUBLISH) {
+        if (eventDto.getState() != EventState.PUBLISH_EVENT) {
             throw new NotFoundException("Событие с ID = " + eventId + " не найдено!");
         }
         statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),

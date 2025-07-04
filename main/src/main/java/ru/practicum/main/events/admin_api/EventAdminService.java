@@ -104,9 +104,9 @@ public class EventAdminService {
         if (eventUpdateDto.getEventDate() != null) {
             event.setEventDate(eventUpdateDto.getEventDate());
         }
-        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.PUBLISH) {
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.PUBLISH_EVENT) {
             if (event.getState() == EventState.SEND_TO_REVIEW) {
-                event.setState(EventState.PUBLISH);
+                event.setState(EventState.PUBLISH_EVENT);
                 event.setPublishedOn(LocalDateTime.now());
             } else {
                 throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания " +

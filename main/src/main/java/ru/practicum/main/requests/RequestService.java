@@ -32,7 +32,7 @@ public class RequestService {
         if (event.getInitiator().getId().equals(user.getId())) {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии!");
         }
-        if (event.getState() != EventState.PUBLISH) {
+        if (event.getState() != EventState.PUBLISH_EVENT) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии!");
         }
         List<Request> requestsWithStatus = requestStorage.findAllByEventIdAndStatus(eventId, RequestState.CONFIRMED);

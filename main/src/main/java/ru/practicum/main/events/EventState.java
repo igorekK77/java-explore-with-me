@@ -2,6 +2,6 @@ package ru.practicum.main.events;
 
 public enum EventState {
     SEND_TO_REVIEW,
-    PUBLISH,
+    PUBLISH_EVENT,
     REJECT_EVENT
 }
