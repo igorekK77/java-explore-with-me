@@ -34,11 +34,13 @@ public class EventPublicService {
         if (text == null) {
             text = "";
         }
-        List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
-        if (categories.size() != categoryIds.size()) {
-            for (Long categoryId : categoryIds) {
-                if (!categories.contains(categoryId)) {
-                    throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
+        if (categoryIds != null) {
+            List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
+            if (categories.size() != categoryIds.size()) {
+                for (Long categoryId : categoryIds) {
+                    if (!categories.contains(categoryId)) {
+                        throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
+                    }
                 }
             }
         }

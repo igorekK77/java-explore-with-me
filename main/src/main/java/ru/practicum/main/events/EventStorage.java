@@ -15,34 +15,46 @@ public interface EventStorage extends JpaRepository<Event, Long> {
 
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long initiatorId);
 
-    @Query("SELECT e FROM Event e WHERE e.initiator.id IN ?1 AND e.state IN ?2 AND e.category.id IN ?3 AND " +
-            "e.eventDate > ?4 AND e.eventDate < ?5")
+    @Query("SELECT e FROM Event e " +
+            "WHERE (?1 IS NULL OR ?1 IS EMPTY OR e.initiator.id IN ?1) AND " +
+            "(?2 IS NULL OR ?2 IS EMPTY OR e.state IN ?2) AND " +
+            "(?3 IS NULL OR ?3 IS EMPTY OR e.category.id IN ?3) AND " +
+            "e.eventDate >= ?4 AND e.eventDate <= ?5")
     Page<Event> findAllByParams(List<Long> userIds, List<EventState> states, List<Long> categoryIds,
                                 LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND e.category.id IN ?2 AND e.paid = ?3 AND " +
-            "e.eventDate > ?4 AND e.eventDate < ?5 AND e.confirmedRequests < e.participantLimit AND " +
+            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
+            "(?2 IS NULL OR ?2 IS EMPTY OR e.category.id IN ?2) AND " +
+            "e.paid = ?3 AND " +
+            "e.eventDate >= ?4 AND e.eventDate <= ?5 AND e.confirmedRequests < e.participantLimit AND " +
             "e.state = ?6")
     Page<Event> findAllByPublicParams(String text, List<Long> categoryIds, boolean paid, LocalDateTime rangeStart,
                                       LocalDateTime rangeEnd, EventState eventState, Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND e.category.id IN ?2 AND e.paid = ?3 AND " +
-            "e.eventDate > ?4 AND e.confirmedRequests < e.participantLimit AND e.state = ?5")
+    @Query("SELECT e FROM Event e " +
+            "WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
+            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
+            "(?2 IS NULL OR ?2 IS EMPTY OR e.category.id IN ?2) AND " +
+            "e.paid = ?3 AND " +
+            "e.eventDate >= ?4 AND e.confirmedRequests < e.participantLimit AND e.state = ?5")
     Page<Event> findAllByPublicParamsWithNotDates(String text, List<Long> categoryIds, boolean paid, LocalDateTime now,
                                                  EventState eventState, Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND e.category.id IN ?2 AND e.paid = ?3 AND " +
-            "e.eventDate > ?4 AND e.eventDate < ?5 AND e.state = ?6")
+            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
+            "(?2 IS NULL OR ?2 IS EMPTY OR e.category.id IN ?2) AND " +
+            "e.paid = ?3 AND " +
+            "e.eventDate >= ?4 AND e.eventDate <= ?5 AND e.state = ?6")
     Page<Event> findAllByPublicParamsWithNotOnlyAvailable(String text, List<Long> categoryIds, boolean paid,
                                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                           EventState eventState, Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND e.category.id IN ?2 AND e.paid = ?3 AND " +
-            "e.eventDate > ?4 AND e.state = ?5")
+            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
+            "(?2 IS NULL OR ?2 IS EMPTY OR e.category.id IN ?2) AND " +
+            "e.paid = ?3 AND " +
+            "e.eventDate >= ?4 AND e.state = ?5")
     Page<Event> findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(String text, List<Long> categoryIds, boolean paid,
                                                                      LocalDateTime now, EventState eventState,
                                                                      Pageable pageable);

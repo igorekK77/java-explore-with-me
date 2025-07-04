@@ -35,25 +35,35 @@ public class EventAdminService {
 
     public List<EventDto> getEvents(List<Long> userIds, List<EventState> states, List<Long> categoryIds, LocalDateTime
             startTime, LocalDateTime endTime, int from, int size) {
-        if (from < 0 || size < 0) {
+        if (from < 0 || size <= 0) {
             throw new ValidationException(("Запрос составлен некорректно"));
         }
-        if (startTime.isAfter(endTime)) {
+        if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
             throw new ValidationException("Даты указаны неправильно!");
         }
-        List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
-        for (Long categoryId: categoryIds) {
-            if (!categories.contains(categoryId)) {
-                throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
-            }
-        }
-        List<Long> existsUsers = userStorage.findAllByIdIn(userIds).stream().map(User::getId).toList();
-        if (existsUsers.size() != userIds.size()) {
-            for (Long userId: userIds) {
-                if (!existsUsers.contains(userId)) {
-                    throw new NotFoundException("Пользователя с ID = " + userId + " не существует!");
+        if (categoryIds != null) {
+            List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
+            for (Long categoryId: categoryIds) {
+                if (!categories.contains(categoryId)) {
+                    throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
                 }
             }
+        }
+        if (userIds != null) {
+            List<Long> existsUsers = userStorage.findAllByIdIn(userIds).stream().map(User::getId).toList();
+            if (existsUsers.size() != userIds.size()) {
+                for (Long userId : userIds) {
+                    if (!existsUsers.contains(userId)) {
+                        throw new NotFoundException("Пользователя с ID = " + userId + " не существует!");
+                    }
+                }
+            }
+        }
+        if (startTime == null) {
+            startTime = LocalDateTime.of(1950, 1, 1, 0, 0);
+        }
+        if (endTime == null) {
+            endTime = LocalDateTime.of(2150, 1, 1, 0, 0);
         }
         Pageable page = PageRequest.of(from / size, size);
         Page<Event> eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, startTime, endTime, page);
@@ -69,6 +79,18 @@ public class EventAdminService {
                 .plusHours(2))) {
             throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
+        }
+        if (eventUpdateDto.getDescription() != null && (eventUpdateDto.getDescription().length() < 20 ||
+                eventUpdateDto.getDescription().length() > 7000)) {
+            throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
+        }
+        if (eventUpdateDto.getAnnotation() != null && (eventUpdateDto.getAnnotation().length() < 20 ||
+                eventUpdateDto.getAnnotation().length() > 2000)) {
+            throw new ValidationException("Аннотация должна содержать от 20 до 2000 символов!");
+        }
+        if (eventUpdateDto.getTitle() != null && (eventUpdateDto.getTitle().length() < 3 ||
+                eventUpdateDto.getTitle().length() > 120)) {
+            throw new ValidationException("Название должно содержать от 3 до 120 символов!");
         }
         if (eventUpdateDto.getEventDate() != null) {
             event.setEventDate(eventUpdateDto.getEventDate());

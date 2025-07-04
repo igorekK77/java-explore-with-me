@@ -37,8 +37,10 @@ public class UserService {
         if (localPart.length() > 64) {
             throw new ValidationException("Основная часть email должна содержать не более 64 символов");
         }
-        if (domainPart.length() > 63) {
-            throw new ValidationException("Домен email должен содержать не более 63 символов");
+        for (String label : domainPart.split("\\.")) {
+            if (label.length() > 63) {
+                throw new ValidationException("Поддомен email превышает 63 символа");
+            }
         }
         if (userStorage.findByEmail(createUserDto.getEmail()) != null) {
             throw new ConflictException("Email уже используется");
