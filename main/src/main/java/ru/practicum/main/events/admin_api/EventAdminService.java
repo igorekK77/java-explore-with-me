@@ -65,6 +65,15 @@ public class EventAdminService {
         if (endTime == null) {
             endTime = LocalDateTime.of(2150, 1, 1, 0, 0);
         }
+        if (userIds != null && userIds.isEmpty()) {
+            userIds = null;
+        }
+        if (states != null && states.isEmpty()) {
+            states = null;
+        }
+        if (categoryIds != null && categoryIds.isEmpty()) {
+            categoryIds = null;
+        }
         Pageable page = PageRequest.of(from / size, size);
         Page<Event> eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, startTime, endTime, page);
         List<Event> events = eventsPage.getContent();

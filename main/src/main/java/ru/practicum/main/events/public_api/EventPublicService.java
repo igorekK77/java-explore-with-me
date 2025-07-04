@@ -44,6 +44,9 @@ public class EventPublicService {
                 }
             }
         }
+        if (categoryIds != null && categoryIds.isEmpty()) {
+            categoryIds = null;
+        }
 
         statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
