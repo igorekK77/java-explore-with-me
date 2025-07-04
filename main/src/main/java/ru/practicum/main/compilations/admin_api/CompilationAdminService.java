@@ -72,6 +72,9 @@ public class CompilationAdminService {
     public CompilationDto updateCompilation(Long compilationId, CompilationCreateDto compilationUpdateDto) {
         Compilation compilation = compilationStorage.findById(compilationId).orElseThrow(() ->
                 new NotFoundException("Подборка с ID = " + compilationId + " не найдена!"));
+        if (compilationUpdateDto.getTitle() != null && compilationUpdateDto.getTitle().length() > 50) {
+            throw new ValidationException("Название подборки должно содержать не больше 50 символов!");
+        }
         if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank() &&
                 !compilationUpdateDto.getTitle().equals(compilation.getTitle())) {
             compilation.setTitle(compilationUpdateDto.getTitle());

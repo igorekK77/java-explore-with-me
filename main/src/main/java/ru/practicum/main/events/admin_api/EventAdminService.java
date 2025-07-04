@@ -14,6 +14,7 @@ import ru.practicum.main.events.Statistics;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
+import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
@@ -77,7 +78,7 @@ public class EventAdminService {
                 event.setState(EventState.PUBLISH_EVENT);
                 event.setPublishedOn(LocalDateTime.now());
             } else {
-                throw new ForbiddenException("Cобытие можно публиковать, только если оно в состоянии ожидания " +
+                throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания " +
                         "публикации");
             }
         }
@@ -85,7 +86,7 @@ public class EventAdminService {
             if (event.getState() == EventState.SEND_TO_REVIEW) {
                 event.setState(EventState.REJECT_EVENT);
             } else {
-                throw new ForbiddenException("Cобытие можно отклонить, только если оно еще не опубликовано");
+                throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }
         }
         if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().equals(event.getAnnotation())) {

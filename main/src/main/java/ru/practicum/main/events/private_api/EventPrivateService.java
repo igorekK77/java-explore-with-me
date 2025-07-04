@@ -106,7 +106,7 @@ public class EventPrivateService {
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
                 + initiator.getId())));
         if (eventDto.getState() == EventState.PUBLISH_EVENT) {
-            throw new ForbiddenException("Событие уже опубликованное, его нельзя изменить");
+            throw new ConflictException("Событие уже опубликованное, его нельзя изменить");
         }
         if (eventUpdateDto.getEventDate() == null || eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {

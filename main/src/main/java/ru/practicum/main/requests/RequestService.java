@@ -38,6 +38,15 @@ public class RequestService {
         if (event.getConfirmedRequests() == event.getParticipantLimit()) {
             throw new ConflictException("У события достигнут лимит запросов на участие!");
         }
+        List<Request> requests = requestStorage.findAllByEventId(eventId);
+        if (!requests.isEmpty()) {
+            List<Long> existsRequestsIdByUsers = requests.stream().map(request -> request.getInitiator()
+                    .getId()).toList();
+            if (existsRequestsIdByUsers.contains(userId)) {
+                throw new ConflictException("Пользователь с ID = " + userId + " уже создавал запрос на участие " +
+                        "в событии с ID = " + eventId + "!");
+            }
+        }
 
         Request request = new Request();
         request.setInitiator(user);

@@ -7,15 +7,20 @@ import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.categories.dto.CategoryMapper;
+import ru.practicum.main.events.Event;
+import ru.practicum.main.events.EventStorage;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryAdminService {
 
     private final CategoryStorage categoryStorage;
+    private final EventStorage eventStorage;
 
     public CategoryDto createCategory(CategoryCreateDto categoryCreateDto) {
         checkCategoryCreateDto(categoryCreateDto);
@@ -49,6 +54,10 @@ public class CategoryAdminService {
     public void deleteCategory(Long catId) {
         if (categoryStorage.findById(catId).isEmpty()) {
             throw new NotFoundException("Категории с Id " + catId + " не существует");
+        }
+        List<Event> eventsWithDeleteCategories = eventStorage.findAllByCategoryId(catId);
+        if (!eventsWithDeleteCategories.isEmpty()) {
+            throw new ConflictException("У категории с ID = " + catId + " есть привязанные события!");
         }
         categoryStorage.deleteById(catId);
     }
