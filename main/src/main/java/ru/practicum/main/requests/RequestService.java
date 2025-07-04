@@ -8,6 +8,7 @@ import ru.practicum.main.events.EventStorage;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
+import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.main.requests.dto.RequestDto;
 import ru.practicum.main.requests.dto.RequestMapper;
 import ru.practicum.main.users.User;
@@ -26,6 +27,9 @@ public class RequestService {
     public RequestDto createRequest(Long userId, Long eventId) {
         User user = userStorage.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с ID = " +
                 userId + " не существует!"));
+        if (eventId.equals(-1L)) {
+            throw new ValidationException("Не указан обязательный параметр запроса");
+        }
         Event event = eventStorage.findById(eventId).orElseThrow(() -> new NotFoundException("События с ID = " +
                 eventId + " не существует!"));
 
