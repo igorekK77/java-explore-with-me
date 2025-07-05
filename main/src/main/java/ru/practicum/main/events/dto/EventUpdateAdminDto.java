@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.main.events.EventState;
+import ru.practicum.main.events.StateAction;
 
 import java.time.LocalDateTime;
 
@@ -31,7 +31,7 @@ public class EventUpdateAdminDto {
 
     private Boolean requestModeration;
 
-    private EventState stateAction;
+    private StateAction stateAction;
 
     private String title;
 }

@@ -23,7 +23,7 @@ public class EventMapper {
         event.setRequestModeration(eventCreatDto.getRequestModeration());
         event.setParticipantLimit(eventCreatDto.getParticipantLimit());
         event.setTitle(eventCreatDto.getTitle());
-        event.setState(EventState.SEND_TO_REVIEW);
+        event.setState(EventState.PENDING);
         return event;
     }
 

@@ -7,10 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
-import ru.practicum.main.events.Event;
-import ru.practicum.main.events.EventState;
-import ru.practicum.main.events.EventStorage;
-import ru.practicum.main.events.Statistics;
+import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
@@ -104,18 +101,18 @@ public class EventAdminService {
         if (eventUpdateDto.getEventDate() != null) {
             event.setEventDate(eventUpdateDto.getEventDate());
         }
-        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.PUBLISH_EVENT) {
-            if (event.getState() == EventState.SEND_TO_REVIEW) {
-                event.setState(EventState.PUBLISH_EVENT);
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
+            if (event.getState() == EventState.PENDING) {
+                event.setState(EventState.PUBLISH);
                 event.setPublishedOn(LocalDateTime.now());
             } else {
                 throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания " +
                         "публикации");
             }
         }
-        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == EventState.REJECT_EVENT) {
-            if (event.getState() == EventState.SEND_TO_REVIEW) {
-                event.setState(EventState.REJECT_EVENT);
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT) {
+            if (event.getState() == EventState.PENDING) {
+                event.setState(EventState.REJECTED);
             } else {
                 throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }

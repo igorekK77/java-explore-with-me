@@ -55,7 +55,7 @@ public class RequestServiceTest {
         ownerUser = new User(2L, "test2@yandex.ru", "test2");
         event = new Event(1L, "test", category, 3, LocalDateTime.now(), "testD",
                 LocalDateTime.now().plusWeeks(2), ownerUser, 54.32, 45.23, true, 7,
-                LocalDateTime.now().plusDays(2), true, EventState.PUBLISH_EVENT, "test");
+                LocalDateTime.now().plusDays(2), true, EventState.PUBLISH, "test");
         requestDto = new RequestDto(1L, 1L, 1L, LocalDateTime.now(), RequestState.PENDING);
         request = new Request(1L, event, requestedUser, LocalDateTime.now(), RequestState.PENDING);
     }
@@ -84,7 +84,7 @@ public class RequestServiceTest {
     @Test
     void testCreateRequestWithNotPublishedEvent() {
         when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
-        event.setState(EventState.REJECT_EVENT);
+        event.setState(EventState.REJECTED);
         when(eventStorage.findById(1L)).thenReturn(Optional.of(event));
         Assertions.assertThrows(ConflictException.class, () -> requestService.createRequest(1L, 1L));
     }
