@@ -168,6 +168,10 @@ public class EventPrivateService {
                 StateActionUser.CANCEL_REVIEW) {
             event.setState(EventState.CANCELED);
         }
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() ==
+                StateActionUser.SEND_TO_REVIEW) {
+            event.setState(EventState.PENDING);
+        }
         Event updatedEvent = eventStorage.save(event);
         return statistics.searchStatistics(List.of(EventMapper.toEventDto(updatedEvent))).getFirst();
     }

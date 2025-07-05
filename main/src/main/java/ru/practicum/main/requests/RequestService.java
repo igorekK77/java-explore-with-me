@@ -56,7 +56,7 @@ public class RequestService {
         Request request = new Request();
         request.setInitiator(user);
         request.setEvent(event);
-        if (!event.isRequestModeration()) {
+        if (event.getParticipantLimit() == 0 || !event.isRequestModeration()) {
             request.setStatus(RequestState.CONFIRMED);
         } else {
             request.setStatus(RequestState.PENDING);
