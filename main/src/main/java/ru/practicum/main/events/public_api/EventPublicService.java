@@ -14,6 +14,7 @@ import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventPublicDto;
 import ru.practicum.main.exceptions.NotFoundException;
+import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.statistics.client.StatsClient;
 
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class EventPublicService {
             if (categories.size() != categoryIds.size()) {
                 for (Long categoryId : categoryIds) {
                     if (!categories.contains(categoryId)) {
-                        throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
+                        throw new ValidationException("Категории с ID = " + categoryId + " не существует!");
                     }
                 }
             }
