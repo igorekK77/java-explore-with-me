@@ -7,7 +7,6 @@ import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.*;
 import ru.practicum.main.exceptions.ConflictException;
-import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.main.requests.Request;
@@ -82,7 +81,7 @@ public class EventPrivateService {
         }
         if (eventCreateDto.getEventDate() == null || eventCreateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {
-            throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         checkCreateOrUpdateEvent(eventCreateDto);
@@ -124,7 +123,7 @@ public class EventPrivateService {
         }
         if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {
-            throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         checkCreateOrUpdateEvent(eventUpdateDto);

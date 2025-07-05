@@ -12,7 +12,6 @@ import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
 import ru.practicum.main.exceptions.ConflictException;
-import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.main.users.User;
@@ -83,7 +82,7 @@ public class EventAdminService {
         Event event = EventMapper.toEventFromEventDto(eventDto);
         if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {
-            throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         if (eventUpdateDto.getDescription() != null && (eventUpdateDto.getDescription().length() < 20 ||
