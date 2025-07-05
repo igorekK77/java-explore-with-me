@@ -103,7 +103,7 @@ public class EventAdminService {
         }
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
             if (event.getState() == EventState.PENDING) {
-                event.setState(EventState.PUBLISH);
+                event.setState(EventState.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else {
                 throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания " +

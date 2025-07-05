@@ -55,7 +55,7 @@ public class EventPublicControllerTest {
                 user, true, "test", 2L);
         event = new Event(1L, "test", category, 3, LocalDateTime.now(), "testD",
                 LocalDateTime.now().plusWeeks(2), user, 54.32, 45.23, true, 7,
-                LocalDateTime.now().plusDays(2), true, EventState.PUBLISH, "test");
+                LocalDateTime.now().plusDays(2), true, EventState.PUBLISHED, "test");
     }
 
     @Test
