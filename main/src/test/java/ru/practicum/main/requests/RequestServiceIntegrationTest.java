@@ -12,7 +12,7 @@ import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.events.StateAction;
 import ru.practicum.main.events.admin_api.EventAdminService;
-import ru.practicum.main.events.dto.EventCreatDto;
+import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
 import ru.practicum.main.events.dto.LocationDto;
@@ -37,7 +37,7 @@ public class RequestServiceIntegrationTest {
 
     private CreateUserDto createUserDto;
 
-    private EventCreatDto eventCreatDto;
+    private EventCreateDto eventCreateDto;
 
     private CategoryCreateDto categoryCreateDto;
 
@@ -49,7 +49,7 @@ public class RequestServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        eventCreatDto = new EventCreatDto(
+        eventCreateDto = new EventCreateDto(
                 "Сплав на байдарках похож на полет.",
                 1L,
                 "Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, " +
@@ -88,9 +88,9 @@ public class RequestServiceIntegrationTest {
         UserDto userDto = userService.createUser(createUserDto);
         UserDto userDto2 = userService.createUser(createUserDto2);
         CategoryDto categoryDto = categoryAdminService.createCategory(categoryCreateDto);
-        eventCreatDto.setCategory(categoryDto.getId());
+        eventCreateDto.setCategory(categoryDto.getId());
         eventUpdateAdminDto.setCategory(categoryDto.getId());
-        EventDto eventDto = eventPrivateService.createEvent(userDto2.getId(), eventCreatDto);
+        EventDto eventDto = eventPrivateService.createEvent(userDto2.getId(), eventCreateDto);
         eventAdminService.updateEvent(eventDto.getId(), eventUpdateAdminDto);
         RequestDto saveRequestDto = requestService.createRequest(userDto.getId(), eventDto.getId());
         requestDto.setId(saveRequestDto.getId());

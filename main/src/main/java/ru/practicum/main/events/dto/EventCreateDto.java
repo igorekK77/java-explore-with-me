@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventCreatDto {
+public class EventCreateDto {
     private String annotation;
 
     private Long category;

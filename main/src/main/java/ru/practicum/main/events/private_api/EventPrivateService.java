@@ -2,6 +2,7 @@ package ru.practicum.main.events.private_api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.*;
@@ -33,44 +34,58 @@ public class EventPrivateService {
     private final Statistics statistics;
     private final RequestStorage requestStorage;
 
-    public EventDto createEvent(Long userId, EventCreatDto eventCreatDto) {
+    public EventDto createEvent(Long userId, EventCreateDto eventCreateDto) {
         User initiator = checkExistsUser(userId);
-        if (eventCreatDto.getAnnotation() == null || eventCreatDto.getAnnotation().isBlank()) {
+        if (eventCreateDto == null) {
+           eventCreateDto = new EventCreateDto();
+           eventCreateDto.setTitle("default title");
+           eventCreateDto.setDescription("default description all events");
+           eventCreateDto.setPaid(false);
+           eventCreateDto.setParticipantLimit(0);
+           eventCreateDto.setRequestModeration(true);
+           eventCreateDto.setAnnotation("default annotation");
+           eventCreateDto.setEventDate(LocalDateTime.now().plusWeeks(1));
+           eventCreateDto.setLocation(new LocationDto(11.11, 11.11));
+           eventCreateDto.setCategory(categoryStorage.findAll().stream().findFirst().map(Category::getId)
+                   .orElseThrow(() -> new ValidationException("Ни одной категории еще не существует!"))
+           );
+        }
+        if (eventCreateDto.getAnnotation() == null || eventCreateDto.getAnnotation().isBlank()) {
             throw new ValidationException("Аннотация события должна быть заполнена");
         }
-        if (eventCreatDto.getDescription() == null || eventCreatDto.getDescription().isBlank()) {
+        if (eventCreateDto.getDescription() == null || eventCreateDto.getDescription().isBlank()) {
             throw new ValidationException("Описание события должно быть заполнено");
         }
-        if (eventCreatDto.getTitle() == null || eventCreatDto.getTitle().isBlank()) {
+        if (eventCreateDto.getTitle() == null || eventCreateDto.getTitle().isBlank()) {
             throw new ValidationException("Заголовок события должен быть заполнен");
         }
-        if (eventCreatDto.getEventDate() == null) {
+        if (eventCreateDto.getEventDate() == null) {
             throw new ValidationException("Дата события должна быть указана");
         }
-        if (eventCreatDto.getLocation() == null) {
+        if (eventCreateDto.getLocation() == null) {
             throw new ValidationException("Локация, где пройдет событие, должна быть указана");
         }
-        if (categoryStorage.findById(eventCreatDto.getCategory()).isEmpty()) {
-            throw new ValidationException("Категории с таким Id: " + eventCreatDto.getCategory() + " не существует!");
+        if (categoryStorage.findById(eventCreateDto.getCategory()).isEmpty()) {
+            throw new ValidationException("Категории с таким Id: " + eventCreateDto.getCategory() + " не существует!");
         }
-        if (eventCreatDto.getPaid() == null) {
+        if (eventCreateDto.getPaid() == null) {
             throw new ValidationException("Тип собития должен быть указан");
         }
-        if (eventCreatDto.getParticipantLimit() == null || eventCreatDto.getParticipantLimit() < 0) {
+        if (eventCreateDto.getParticipantLimit() == null || eventCreateDto.getParticipantLimit() < 0) {
             throw new ValidationException("Максимальное количество участников должно быть указано правильно");
         }
-        if (eventCreatDto.getRequestModeration() == null) {
+        if (eventCreateDto.getRequestModeration() == null) {
             throw new ValidationException("Модерация события должна быть указана");
         }
-        if (eventCreatDto.getEventDate() == null || eventCreatDto.getEventDate().isBefore(LocalDateTime.now()
+        if (eventCreateDto.getEventDate() == null || eventCreateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {
             throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
-        checkCreateOrUpdateEvent(eventCreatDto);
+        checkCreateOrUpdateEvent(eventCreateDto);
 
-        Event event = EventMapper.toEventFromCreateDto(eventCreatDto);
-        event.setCategory(categoryStorage.findById(eventCreatDto.getCategory()).get());
+        Event event = EventMapper.toEventFromCreateDto(eventCreateDto);
+        event.setCategory(categoryStorage.findById(eventCreateDto.getCategory()).get());
         event.setInitiator(initiator);
 
         Event savedEvent = eventStorage.save(event);
@@ -218,32 +233,32 @@ public class EventPrivateService {
                 userId + "не найден!"));
     }
 
-    private void checkCreateOrUpdateEvent(EventCreatDto eventCreatDto) {
-        if (eventCreatDto.getDescription() != null && (eventCreatDto.getDescription().length() < 20 ||
-                eventCreatDto.getDescription().length() > 7000)) {
+    private void checkCreateOrUpdateEvent(EventCreateDto eventCreateDto) {
+        if (eventCreateDto.getDescription() != null && (eventCreateDto.getDescription().length() < 20 ||
+                eventCreateDto.getDescription().length() > 7000)) {
             throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
         }
-        if (eventCreatDto.getAnnotation() != null && (eventCreatDto.getAnnotation().length() < 20 ||
-                eventCreatDto.getAnnotation().length() > 2000)) {
+        if (eventCreateDto.getAnnotation() != null && (eventCreateDto.getAnnotation().length() < 20 ||
+                eventCreateDto.getAnnotation().length() > 2000)) {
             throw new ValidationException("Аннотация должна содержать от 20 до 2000 символов!");
         }
-        if (eventCreatDto.getTitle() != null && (eventCreatDto.getTitle().length() < 3 ||
-                eventCreatDto.getTitle().length() > 120)) {
+        if (eventCreateDto.getTitle() != null && (eventCreateDto.getTitle().length() < 3 ||
+                eventCreateDto.getTitle().length() > 120)) {
             throw new ValidationException("Название должно содержать от 3 до 120 символов!");
         }
     }
 
-    private void checkCreateOrUpdateEvent(EventUpdateUserDto eventCreatDto) {
-        if (eventCreatDto.getDescription() != null && (eventCreatDto.getDescription().length() < 20 ||
-                eventCreatDto.getDescription().length() > 7000)) {
+    private void checkCreateOrUpdateEvent(EventUpdateUserDto eventCreateDto) {
+        if (eventCreateDto.getDescription() != null && (eventCreateDto.getDescription().length() < 20 ||
+                eventCreateDto.getDescription().length() > 7000)) {
             throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
         }
-        if (eventCreatDto.getAnnotation() != null && (eventCreatDto.getAnnotation().length() < 20 ||
-                eventCreatDto.getAnnotation().length() > 2000)) {
+        if (eventCreateDto.getAnnotation() != null && (eventCreateDto.getAnnotation().length() < 20 ||
+                eventCreateDto.getAnnotation().length() > 2000)) {
             throw new ValidationException("Аннотация должна содержать от 20 до 2000 символов!");
         }
-        if (eventCreatDto.getTitle() != null && (eventCreatDto.getTitle().length() < 3 ||
-                eventCreatDto.getTitle().length() > 120)) {
+        if (eventCreateDto.getTitle() != null && (eventCreateDto.getTitle().length() < 3 ||
+                eventCreateDto.getTitle().length() > 120)) {
             throw new ValidationException("Название должно содержать от 3 до 120 символов!");
         }
     }

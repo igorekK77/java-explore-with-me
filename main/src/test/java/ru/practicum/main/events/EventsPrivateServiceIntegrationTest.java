@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.categories.admin_api.CategoryAdminService;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
-import ru.practicum.main.events.dto.EventCreatDto;
+import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.LocationDto;
 import ru.practicum.main.events.private_api.EventPrivateService;
@@ -28,13 +28,13 @@ public class EventsPrivateServiceIntegrationTest {
     private final UserService userService;
     private final CategoryAdminService categoryAdminService;
 
-    private EventCreatDto eventCreatDto;
+    private EventCreateDto eventCreateDto;
     private CreateUserDto createUserDto;
     private CategoryCreateDto categoryCreateDto;
 
     @BeforeEach
     void setUp() {
-        eventCreatDto = new EventCreatDto(
+        eventCreateDto = new EventCreateDto(
                 "Сплав на байдарках похож на полет.",
                 1L,
                 "Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, " +
@@ -55,8 +55,8 @@ public class EventsPrivateServiceIntegrationTest {
     void testCreateEvent() {
         UserDto userDto = userService.createUser(createUserDto);
         CategoryDto categoryDto = categoryAdminService.createCategory(categoryCreateDto);
-        eventCreatDto.setCategory(categoryDto.getId());
-        EventDto eventDto = eventPrivateService.createEvent(userDto.getId(), eventCreatDto);
+        eventCreateDto.setCategory(categoryDto.getId());
+        EventDto eventDto = eventPrivateService.createEvent(userDto.getId(), eventCreateDto);
         System.out.println(eventDto);
     }
 }

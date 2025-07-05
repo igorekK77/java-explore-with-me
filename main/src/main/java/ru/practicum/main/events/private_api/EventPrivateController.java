@@ -3,7 +3,7 @@ package ru.practicum.main.events.private_api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.main.events.dto.EventCreatDto;
+import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventUpdateUserDto;
 import ru.practicum.main.requests.dto.ConfirmedAndRejectedRequestsDto;
@@ -21,8 +21,9 @@ public class EventPrivateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventDto createEvent(@PathVariable Long userId, @RequestBody EventCreatDto eventCreatDto) {
-        return eventPrivateService.createEvent(userId, eventCreatDto);
+    public EventDto createEvent(@PathVariable Long userId, @RequestBody(required = false) EventCreateDto
+            eventCreateDto) {
+        return eventPrivateService.createEvent(userId, eventCreateDto);
     }
 
     @GetMapping

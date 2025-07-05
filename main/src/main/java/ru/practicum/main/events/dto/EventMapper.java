@@ -10,19 +10,19 @@ public class EventMapper {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static Event toEventFromCreateDto(EventCreatDto eventCreatDto) {
+    public static Event toEventFromCreateDto(EventCreateDto eventCreateDto) {
         Event event = new Event();
-        event.setAnnotation(eventCreatDto.getAnnotation());
-        event.setDescription(eventCreatDto.getDescription());
-        event.setEventDate(eventCreatDto.getEventDate());
-        event.setLocationLat(eventCreatDto.getLocation().getLat());
-        event.setLocationLon(eventCreatDto.getLocation().getLon());
-        event.setPaid(eventCreatDto.getPaid());
+        event.setAnnotation(eventCreateDto.getAnnotation());
+        event.setDescription(eventCreateDto.getDescription());
+        event.setEventDate(eventCreateDto.getEventDate());
+        event.setLocationLat(eventCreateDto.getLocation().getLat());
+        event.setLocationLon(eventCreateDto.getLocation().getLon());
+        event.setPaid(eventCreateDto.getPaid());
         event.setConfirmedRequests(0);
         event.setCreatedOn(LocalDateTime.now());
-        event.setRequestModeration(eventCreatDto.getRequestModeration());
-        event.setParticipantLimit(eventCreatDto.getParticipantLimit());
-        event.setTitle(eventCreatDto.getTitle());
+        event.setRequestModeration(eventCreateDto.getRequestModeration());
+        event.setParticipantLimit(eventCreateDto.getParticipantLimit());
+        event.setTitle(eventCreateDto.getTitle());
         event.setState(EventState.PENDING);
         return event;
     }
