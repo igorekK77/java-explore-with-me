@@ -1,5 +1,7 @@
 package ru.practicum.main.events.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,8 @@ public class EventPublicDto {
 
     private int confirmedRequests;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(type = "string", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     private User initiator;
