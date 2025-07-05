@@ -167,7 +167,7 @@ public class RequestServiceTest {
         when(requestStorage.findById(1L)).thenReturn(Optional.of(request));
         when(requestStorage.save(any(Request.class))).thenReturn(request);
         RequestDto result = requestService.cancelRequest(1L, 1L);
-        requestDto.setStatus(RequestState.CANCELLED);
+        requestDto.setStatus(RequestState.CANCELED);
         Assertions.assertEquals(requestDto.getId(), result.getId());
         Assertions.assertEquals(requestDto.getRequester(), result.getRequester());
         Assertions.assertEquals(requestDto.getStatus(), result.getStatus());

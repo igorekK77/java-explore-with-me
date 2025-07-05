@@ -82,7 +82,7 @@ public class RequestService {
             throw new ForbiddenException("Пользователь с ID = " + userId + " не создавал запрос для события с ID = " +
                     requestId + "!");
         }
-        request.setStatus(RequestState.CANCELLED);
+        request.setStatus(RequestState.CANCELED);
         Request savedRequest = requestStorage.save(request);
         return RequestMapper.toDto(savedRequest);
     }

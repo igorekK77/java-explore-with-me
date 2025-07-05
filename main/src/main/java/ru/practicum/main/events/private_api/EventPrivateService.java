@@ -3,13 +3,8 @@ package ru.practicum.main.events.private_api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.CategoryStorage;
-import ru.practicum.main.events.Event;
-import ru.practicum.main.events.EventState;
-import ru.practicum.main.events.EventStorage;
-import ru.practicum.main.events.Statistics;
-import ru.practicum.main.events.dto.EventCreatDto;
-import ru.practicum.main.events.dto.EventDto;
-import ru.practicum.main.events.dto.EventMapper;
+import ru.practicum.main.events.*;
+import ru.practicum.main.events.dto.*;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
@@ -101,7 +96,7 @@ public class EventPrivateService {
         return statistics.searchStatistics(List.of(eventDto)).getFirst();
     }
 
-    public EventDto updateEvent(Long userId, Long eventId, EventCreatDto eventUpdateDto) {
+    public EventDto updateEvent(Long userId, Long eventId, EventUpdateUserDto eventUpdateDto) {
         User initiator = checkExistsUser(userId);
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
@@ -150,6 +145,10 @@ public class EventPrivateService {
         }
         if (eventUpdateDto.getTitle() != null) {
             event.setTitle(eventUpdateDto.getTitle());
+        }
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() ==
+                StateActionUser.CANCEL_REVIEW) {
+            event.setState(EventState.CANCELED);
         }
         Event updatedEvent = eventStorage.save(event);
         return statistics.searchStatistics(List.of(EventMapper.toEventDto(updatedEvent))).getFirst();
@@ -220,6 +219,21 @@ public class EventPrivateService {
     }
 
     private void checkCreateOrUpdateEvent(EventCreatDto eventCreatDto) {
+        if (eventCreatDto.getDescription() != null && (eventCreatDto.getDescription().length() < 20 ||
+                eventCreatDto.getDescription().length() > 7000)) {
+            throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
+        }
+        if (eventCreatDto.getAnnotation() != null && (eventCreatDto.getAnnotation().length() < 20 ||
+                eventCreatDto.getAnnotation().length() > 2000)) {
+            throw new ValidationException("Аннотация должна содержать от 20 до 2000 символов!");
+        }
+        if (eventCreatDto.getTitle() != null && (eventCreatDto.getTitle().length() < 3 ||
+                eventCreatDto.getTitle().length() > 120)) {
+            throw new ValidationException("Название должно содержать от 3 до 120 символов!");
+        }
+    }
+
+    private void checkCreateOrUpdateEvent(EventUpdateUserDto eventCreatDto) {
         if (eventCreatDto.getDescription() != null && (eventCreatDto.getDescription().length() < 20 ||
                 eventCreatDto.getDescription().length() > 7000)) {
             throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
