@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.categories.admin_api.CategoryAdminService;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
-import ru.practicum.main.events.EventState;
 import ru.practicum.main.events.StateAction;
 import ru.practicum.main.events.admin_api.EventAdminService;
 import ru.practicum.main.events.dto.EventCreatDto;
