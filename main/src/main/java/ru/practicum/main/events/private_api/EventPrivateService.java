@@ -39,11 +39,11 @@ public class EventPrivateService {
         if (eventCreateDto == null) {
            eventCreateDto = new EventCreateDto();
            eventCreateDto.setTitle("default title");
-           eventCreateDto.setDescription("default description all events");
+           eventCreateDto.setDescription("default description for all events");
            eventCreateDto.setPaid(false);
            eventCreateDto.setParticipantLimit(0);
            eventCreateDto.setRequestModeration(true);
-           eventCreateDto.setAnnotation("default annotation");
+           eventCreateDto.setAnnotation("default annotation for all events");
            eventCreateDto.setEventDate(LocalDateTime.now().plusWeeks(1));
            eventCreateDto.setLocation(new LocationDto(11.11, 11.11));
            eventCreateDto.setCategory(categoryStorage.findAll().stream().findFirst().map(Category::getId)
