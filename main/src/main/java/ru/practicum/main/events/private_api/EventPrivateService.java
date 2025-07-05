@@ -69,13 +69,16 @@ public class EventPrivateService {
             throw new ValidationException("Категории с таким Id: " + eventCreateDto.getCategory() + " не существует!");
         }
         if (eventCreateDto.getPaid() == null) {
-            throw new ValidationException("Тип собития должен быть указан");
+            eventCreateDto.setPaid(false);
         }
-        if (eventCreateDto.getParticipantLimit() == null || eventCreateDto.getParticipantLimit() < 0) {
+        if (eventCreateDto.getParticipantLimit() == null) {
+            eventCreateDto.setParticipantLimit(0);
+        }
+        if (eventCreateDto.getParticipantLimit() < 0) {
             throw new ValidationException("Максимальное количество участников должно быть указано правильно");
         }
         if (eventCreateDto.getRequestModeration() == null) {
-            throw new ValidationException("Модерация события должна быть указана");
+            eventCreateDto.setRequestModeration(true);
         }
         if (eventCreateDto.getEventDate() == null || eventCreateDto.getEventDate().isBefore(LocalDateTime.now()
                 .plusHours(2))) {
