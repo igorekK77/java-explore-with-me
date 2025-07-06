@@ -21,7 +21,7 @@ public class Statistics {
                 .map(event -> "/events/" + event.getId())
                 .toList();
         List<StatisticsDto> allStatistics = statsClient.getStatistics(LocalDateTime.now().minusYears(1),
-                LocalDateTime.now(), uris, false);
+                LocalDateTime.now(), uris, true);
         Map<String, StatisticsDto> statisticsMap = new HashMap<>();
         for (StatisticsDto statisticsDto : allStatistics) {
             statisticsMap.put(statisticsDto.getUri(), statisticsDto);
