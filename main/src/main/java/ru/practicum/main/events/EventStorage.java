@@ -54,9 +54,9 @@ public interface EventStorage extends JpaRepository<Event, Long> {
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
             "(?2 IS NULL OR e.category.id IN ?2) AND " +
             "e.paid = ?3 AND " +
-            "e.eventDate >= ?4 AND e.state = ?5")
+            "e.eventDate >= ?4")
     List<Event> findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(String text, List<Long> categoryIds, boolean paid,
-                                                                     LocalDateTime now, EventState eventState);
+                                                                     LocalDateTime now);
 
     List<Event> findAllByIdIn(List<Long> ids);
 

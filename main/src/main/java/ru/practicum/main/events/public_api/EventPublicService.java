@@ -61,7 +61,7 @@ public class EventPublicService {
         } else {
             if (rangeStart == null || rangeEnd == null) {
                 events = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
-                        categoryIds, paid, LocalDateTime.now(), EventState.PUBLISHED);
+                        categoryIds, paid, LocalDateTime.now());
             } else {
                 events = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
                         rangeStart, rangeEnd, EventState.PUBLISHED);
