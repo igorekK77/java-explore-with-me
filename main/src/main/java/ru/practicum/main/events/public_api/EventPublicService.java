@@ -25,7 +25,7 @@ public class EventPublicService {
     private final Statistics statistics;
     private final StatsClient statsClient;
 
-    public List<EventPublicDto> getEvents(String text, List<Long> categoryIds, boolean paid, LocalDateTime rangeStart,
+    public List<EventPublicDto> getEvents(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, boolean onlyAvailable, SortType sort, int from,
                                           int size, HttpServletRequest httpServletRequest) {
         if (text == null) {
@@ -61,7 +61,7 @@ public class EventPublicService {
         } else {
             if (rangeStart == null || rangeEnd == null) {
                 events = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
-                        categoryIds, LocalDateTime.now());
+                        categoryIds, LocalDateTime.now(), EventState.PUBLISHED, paid);
             } else {
                 events = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
                         rangeStart, rangeEnd, EventState.PUBLISHED);

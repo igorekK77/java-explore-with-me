@@ -26,36 +26,37 @@ public interface EventStorage extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
             "(?2 IS NULL OR e.category.id IN ?2) AND " +
-            "e.paid = ?3 AND " +
+            "(?3 IS NULL OR e.paid = ?3) AND " +
             "e.eventDate >= ?4 AND e.eventDate <= ?5 AND e.confirmedRequests < e.participantLimit AND " +
             "e.state = ?6")
-    List<Event> findAllByPublicParams(String text, List<Long> categoryIds, boolean paid, LocalDateTime rangeStart,
+    List<Event> findAllByPublicParams(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                       LocalDateTime rangeEnd, EventState eventState);
 
     @Query("SELECT e FROM Event e " +
             "WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
             "(?2 IS NULL OR e.category.id IN ?2) AND " +
-            "e.paid = ?3 AND " +
+            "(?3 IS NULL OR e.paid = ?3) AND " +
             "e.eventDate >= ?4 AND e.confirmedRequests < e.participantLimit AND e.state = ?5")
-    List<Event> findAllByPublicParamsWithNotDates(String text, List<Long> categoryIds, boolean paid, LocalDateTime now,
+    List<Event> findAllByPublicParamsWithNotDates(String text, List<Long> categoryIds, Boolean paid, LocalDateTime now,
                                                  EventState eventState);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
             "(?2 IS NULL OR e.category.id IN ?2) AND " +
-            "e.paid = ?3 AND " +
+            "(?3 IS NULL OR e.paid = ?3) AND " +
             "e.eventDate >= ?4 AND e.eventDate <= ?5 AND e.state = ?6")
-    List<Event> findAllByPublicParamsWithNotOnlyAvailable(String text, List<Long> categoryIds, boolean paid,
+    List<Event> findAllByPublicParamsWithNotOnlyAvailable(String text, List<Long> categoryIds, Boolean paid,
                                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                           EventState eventState);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +
             "(?2 IS NULL OR e.category.id IN ?2) AND " +
-            "e.eventDate >= ?3")
+            "e.eventDate >= ?3 AND e.state = ?4 AND (?5 IS NULL OR e.paid = ?5)")
     List<Event> findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(String text, List<Long> categoryIds,
-                                                                     LocalDateTime now);
+                                                                     LocalDateTime now, EventState eventState,
+                                                                     Boolean paid);
 
     List<Event> findAllByIdIn(List<Long> ids);
 
