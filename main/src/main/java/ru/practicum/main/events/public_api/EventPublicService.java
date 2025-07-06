@@ -18,6 +18,7 @@ import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.statistics.client.StatsClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -52,41 +53,34 @@ public class EventPublicService {
         statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
 
-        Pageable pageable;
-        Page<Event> pageEvents;
-
-        if (sort == SortType.EVENT_DATE) {
-            pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
-        } else {
-            pageable = PageRequest.of(from / size, size);
-        }
+        List<Event> events;
 
         if (onlyAvailable) {
             if (rangeStart == null || rangeEnd == null) {
-                pageEvents = eventStorage.findAllByPublicParamsWithNotDates(text, categoryIds, paid,
-                        LocalDateTime.now(), EventState.PUBLISHED, pageable);
+                events = eventStorage.findAllByPublicParamsWithNotDates(text, categoryIds, paid,
+                        LocalDateTime.now(), EventState.PUBLISHED);
             } else {
-                pageEvents = eventStorage.findAllByPublicParams(text, categoryIds, paid, rangeStart, rangeEnd,
-                        EventState.PUBLISHED, pageable);
+                events = eventStorage.findAllByPublicParams(text, categoryIds, paid, rangeStart, rangeEnd,
+                        EventState.PUBLISHED);
             }
         } else {
             if (rangeStart == null || rangeEnd == null) {
-                pageEvents = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
-                        categoryIds, paid, LocalDateTime.now(), EventState.PUBLISHED, pageable);
+                events = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
+                        categoryIds, paid, LocalDateTime.now(), EventState.PUBLISHED);
             } else {
-                pageEvents = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
-                        rangeStart, rangeEnd, EventState.PUBLISHED, pageable);
+                events = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
+                        rangeStart, rangeEnd, EventState.PUBLISHED);
             }
         }
-        List<EventDto> eventsDto = pageEvents.getContent().stream().map(EventMapper::toEventDto).toList();
+        List<EventDto> eventsDto = events.stream().map(EventMapper::toEventDto).toList();
+        eventsDto = statistics.searchStatistics(eventsDto);
 
         if (sort == SortType.EVENT_DATE) {
-            return statistics.searchStatistics(eventsDto).stream()
-                    .map(EventMapper::toEventPublicDtoFromEventDto).toList();
+            return eventsDto.stream().sorted(Comparator.comparing(EventDto::getEventDate))
+                    .skip(from).limit(size).map(EventMapper::toEventPublicDtoFromEventDto).toList();
         } else {
-            eventsDto = statistics.searchStatistics(eventsDto);
-            eventsDto.sort(Comparator.comparing(EventDto::getViews));
-            return eventsDto.stream().map(EventMapper::toEventPublicDtoFromEventDto).toList();
+            return eventsDto.stream().sorted(Comparator.comparing(EventDto::getViews).reversed())
+                    .skip(from).limit(size).map(EventMapper::toEventPublicDtoFromEventDto).toList();
         }
     }
 
