@@ -20,7 +20,7 @@ public class EventPublicController {
     @GetMapping
     public List<EventPublicDto> getEvents(@RequestParam(required = false) String text,
                                           @RequestParam(required = false) List<Long> categories,
-                                          @RequestParam(defaultValue = "false") boolean paid,
+                                          @RequestParam(defaultValue = "true") boolean paid,
                                           @RequestParam(required = false)
                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                           @RequestParam(required = false) @DateTimeFormat(pattern =
