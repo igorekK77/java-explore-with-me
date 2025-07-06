@@ -2,10 +2,6 @@ package ru.practicum.main.events.public_api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
@@ -18,7 +14,6 @@ import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.statistics.client.StatsClient;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
