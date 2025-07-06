@@ -8,6 +8,8 @@ import ru.practicum.statistics.dto.CreateStatisticDto;
 import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,9 @@ public class StatsController {
         if (uris == null) {
             uris = new ArrayList<>();
         }
-        return statsService.getStatistics(start, end, uris, unique);
+        List<String> decodedUris = uris.stream()
+                .map(uri -> URLDecoder.decode(uri, StandardCharsets.UTF_8))
+                .toList();
+        return statsService.getStatistics(start, end, decodedUris, unique);
     }
 }
