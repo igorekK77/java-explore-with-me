@@ -31,9 +31,11 @@ public class StatsService {
     @Transactional(readOnly = true)
     public List<StatisticsDto> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris,
                                              boolean unique) {
-        if (start == null || end == null) {
-            start = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
-            end = LocalDateTime.of(2040, 1, 1, 0, 0, 0);
+        if (start == null) {
+            throw new ValidationException("Дата и время старта не указана!");
+        }
+        if (end == null) {
+            throw new ValidationException("Дата и время окончания не указана!");
         }
         if (start.isAfter(end)) {
             throw new ValidationException("Даты указаны неправильно!");
