@@ -25,7 +25,7 @@ public class EventPublicController {
                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                           @RequestParam(required = false) @DateTimeFormat(pattern =
                                             "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                          @RequestParam(defaultValue = "true") boolean onlyAvailable,
+                                          @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                           @RequestParam(defaultValue = "EVENT_DATE") SortType sort,
                                           @RequestParam(defaultValue = "0") int from,
                                           @RequestParam(defaultValue = "10") int size,
