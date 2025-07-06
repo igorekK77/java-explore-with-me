@@ -98,6 +98,12 @@ public class EventPublicService {
         }
         statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
+
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return statistics.searchStatistics(List.of(eventDto)).getFirst();
     }
 }
