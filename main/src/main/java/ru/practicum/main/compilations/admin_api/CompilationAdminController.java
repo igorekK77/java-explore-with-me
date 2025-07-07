@@ -1,5 +1,6 @@
 package ru.practicum.main.compilations.admin_api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,13 @@ public class CompilationAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto createCompilation(@RequestBody CompilationCreateDto compilationCreateDto) {
+    public CompilationDto createCompilation(@Valid @RequestBody CompilationCreateDto compilationCreateDto) {
         return compilationAdminService.createCompilation(compilationCreateDto);
     }
 
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable Long compId,
-                                            @RequestBody CompilationCreateDto compilationCreateDto) {
+                                            @Valid @RequestBody CompilationCreateDto compilationCreateDto) {
         return compilationAdminService.updateCompilation(compId, compilationCreateDto);
     }
 

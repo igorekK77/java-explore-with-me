@@ -1,6 +1,5 @@
 package ru.practicum.main.compilations.admin_api;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.compilations.Compilation;
@@ -29,7 +28,7 @@ public class CompilationAdminService {
     private final CompilationEventStorage compilationEventStorage;
     private final EventStorage eventStorage;
 
-    public CompilationDto createCompilation(@Valid CompilationCreateDto compilationCreateDto) {
+    public CompilationDto createCompilation(CompilationCreateDto compilationCreateDto) {
         if (compilationCreateDto.getPinned() == null) {
             compilationCreateDto.setPinned(false);
         }
@@ -63,7 +62,7 @@ public class CompilationAdminService {
         return compilationDto;
     }
 
-    public CompilationDto updateCompilation(Long compilationId, @Valid CompilationCreateDto compilationUpdateDto) {
+    public CompilationDto updateCompilation(Long compilationId, CompilationCreateDto compilationUpdateDto) {
         Compilation compilation = compilationStorage.findById(compilationId).orElseThrow(() ->
                 new NotFoundException("Подборка с ID = " + compilationId + " не найдена!"));
         if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank() &&
