@@ -55,12 +55,6 @@ public class EventAdminService {
                 }
             }
         }
-        if (startTime == null) {
-            startTime = LocalDateTime.of(1950, 1, 1, 0, 0);
-        }
-        if (endTime == null) {
-            endTime = LocalDateTime.of(2150, 1, 1, 0, 0);
-        }
         if (userIds != null && userIds.isEmpty()) {
             userIds = null;
         }
