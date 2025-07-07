@@ -15,7 +15,6 @@ import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventPublicDto;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
-import ru.practicum.main.exceptions.ValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,6 @@ public class CompilationAdminService {
     private final EventStorage eventStorage;
 
     public CompilationDto createCompilation(CompilationCreateDto compilationCreateDto) {
-        if (compilationCreateDto.getTitle() == null || compilationCreateDto.getTitle().isBlank()) {
-            throw new ValidationException("Название подборки должно быть указано!");
-        }
-        if (compilationCreateDto.getTitle().length() > 50) {
-            throw new ValidationException("Название подборки должно содержать не больше 50 символов!");
-        }
         if (compilationCreateDto.getPinned() == null) {
             compilationCreateDto.setPinned(false);
         }
@@ -72,9 +65,6 @@ public class CompilationAdminService {
     public CompilationDto updateCompilation(Long compilationId, CompilationCreateDto compilationUpdateDto) {
         Compilation compilation = compilationStorage.findById(compilationId).orElseThrow(() ->
                 new NotFoundException("Подборка с ID = " + compilationId + " не найдена!"));
-        if (compilationUpdateDto.getTitle() != null && compilationUpdateDto.getTitle().length() > 50) {
-            throw new ValidationException("Название подборки должно содержать не больше 50 символов!");
-        }
         if (compilationUpdateDto.getTitle() != null && !compilationUpdateDto.getTitle().isBlank() &&
                 !compilationUpdateDto.getTitle().equals(compilation.getTitle())) {
             compilation.setTitle(compilationUpdateDto.getTitle());
