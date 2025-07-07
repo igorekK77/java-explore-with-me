@@ -18,10 +18,16 @@ public interface EventStorage extends JpaRepository<Event, Long> {
             "WHERE (?1 IS NULL OR e.initiator.id IN ?1) AND " +
             "(?2 IS NULL OR e.state IN ?2) AND " +
             "(?3 IS NULL OR e.category.id IN ?3) AND " +
-            "(?4 IS NULL OR e.eventDate >= ?4) AND " +
-            "(?5 IS NULL OR e.eventDate <= ?5)")
+            "e.eventDate >= ?4 AND e.eventDate <= ?5")
     Page<Event> findAllByParams(List<Long> userIds, List<EventState> states, List<Long> categoryIds,
                                 LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
+
+    @Query("SELECT e FROM Event e " +
+            "WHERE (?1 IS NULL OR e.initiator.id IN ?1) AND " +
+            "(?2 IS NULL OR e.state IN ?2) AND " +
+            "(?3 IS NULL OR e.category.id IN ?3)")
+    Page<Event> findAllByParams(List<Long> userIds, List<EventState> states, List<Long> categoryIds,
+                                            Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE (LOWER(e.annotation) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?1, '%'))) AND " +

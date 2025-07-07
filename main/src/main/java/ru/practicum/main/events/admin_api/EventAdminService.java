@@ -65,7 +65,12 @@ public class EventAdminService {
             categoryIds = null;
         }
         Pageable page = PageRequest.of(from / size, size);
-        Page<Event> eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, startTime, endTime, page);
+        Page<Event> eventsPage;
+        if (startTime == null || endTime == null) {
+            eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, page);
+        } else {
+            eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, startTime, endTime, page);
+        }
         List<Event> events = eventsPage.getContent();
         return statistics.searchStatistics(events.stream().map(EventMapper::toEventDto).toList());
     }
