@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.*;
