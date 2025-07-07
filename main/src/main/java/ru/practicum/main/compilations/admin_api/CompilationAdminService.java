@@ -15,6 +15,7 @@ import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventPublicDto;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
+import ru.practicum.main.exceptions.ValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class CompilationAdminService {
     private final EventStorage eventStorage;
 
     public CompilationDto createCompilation(CompilationCreateDto compilationCreateDto) {
+        if (compilationCreateDto.getTitle() == null || compilationCreateDto.getTitle().isBlank()) {
+            throw new ValidationException("Название подборки должно быть указано!");
+        }
         if (compilationCreateDto.getPinned() == null) {
             compilationCreateDto.setPinned(false);
         }
