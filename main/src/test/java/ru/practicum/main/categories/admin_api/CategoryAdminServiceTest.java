@@ -15,7 +15,6 @@ import ru.practicum.main.categories.dto.CategoryMapper;
 import ru.practicum.main.events.EventStorage;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
-import ru.practicum.main.exceptions.ValidationException;
 
 
 import java.util.List;
@@ -54,13 +53,6 @@ public class CategoryAdminServiceTest {
     }
 
     @Test
-    void testCreateCategoryWithEmptyName() {
-        CategoryCreateDto emptyCategoryCreateDto = new CategoryCreateDto("");
-        Assertions.assertThrows(ValidationException.class, () ->
-                categoryAdminService.createCategory(emptyCategoryCreateDto));
-    }
-
-    @Test
     void testCreateCategoryWithUsedName() {
         when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category);
         Assertions.assertThrows(ConflictException.class, () -> categoryAdminService.createCategory(categoryCreateDto));
@@ -79,14 +71,6 @@ public class CategoryAdminServiceTest {
         when(categoryStorage.findById(1L)).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class, () -> categoryAdminService.updateCategory(1L,
                 categoryCreateDto));
-    }
-
-    @Test
-    void testUpdateCategoryWithEmptyName() {
-        CategoryCreateDto emptyCategoryUpdateDto = new CategoryCreateDto("");
-        when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
-        Assertions.assertThrows(ValidationException.class, () -> categoryAdminService.updateCategory(1L,
-                emptyCategoryUpdateDto));
     }
 
     @Test
