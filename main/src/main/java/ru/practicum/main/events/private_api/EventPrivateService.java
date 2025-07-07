@@ -1,6 +1,8 @@
 package ru.practicum.main.events.private_api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
@@ -99,8 +101,8 @@ public class EventPrivateService {
         if (from < 0 || size < 0) {
             throw new ValidationException(("Запрос составлен некорректно"));
         }
-
-        List<EventDto> userEvents = eventStorage.findAllByInitiatorId(from, size, initiator.getId()).stream()
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<EventDto> userEvents = eventStorage.findAllByInitiatorId(initiator.getId(), pageable).getContent().stream()
                 .map(EventMapper::toEventDto).toList();
         return statistics.searchStatistics(userEvents);
     }

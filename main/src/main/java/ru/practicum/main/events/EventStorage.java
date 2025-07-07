@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventStorage extends JpaRepository<Event, Long> {
-    @Query(value = "SELECT * FROM events WHERE initiator_id = ?3 LIMIT ?2 OFFSET ?1", nativeQuery = true)
-    List<Event> findAllByInitiatorId(int from, int size, Long userId);
+    Page<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long initiatorId);
 

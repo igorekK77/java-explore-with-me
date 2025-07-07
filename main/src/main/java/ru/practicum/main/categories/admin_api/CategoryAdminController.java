@@ -1,5 +1,6 @@
 package ru.practicum.main.categories.admin_api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,13 @@ public class CategoryAdminController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@RequestBody CategoryCreateDto categoryCreateDto) {
+    public CategoryDto createCategory(@Valid @RequestBody CategoryCreateDto categoryCreateDto) {
         return categoryAdminService.createCategory(categoryCreateDto);
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto updateCategory(@PathVariable Long catId, @RequestBody CategoryCreateDto categoryUpdateDto) {
+    public CategoryDto updateCategory(@PathVariable Long catId, @Valid @RequestBody CategoryCreateDto
+            categoryUpdateDto) {
         return categoryAdminService.updateCategory(catId, categoryUpdateDto);
     }
 

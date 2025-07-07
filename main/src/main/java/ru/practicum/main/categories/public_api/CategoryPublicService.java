@@ -1,6 +1,8 @@
 package ru.practicum.main.categories.public_api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.categories.dto.CategoryDto;
@@ -16,10 +18,11 @@ public class CategoryPublicService {
     private final CategoryStorage categoryStorage;
 
     public List<CategoryDto> getCategories(int from, int size) {
-        if (from < 0 || size < 0) {
+        if (from < 0 || size <= 0) {
             throw new ValidationException(("Запрос составлен некорректно"));
         }
-        return categoryStorage.findCategoryByParams(from, size).stream().map(CategoryMapper::toCategoryDto).toList();
+        Pageable pageable = PageRequest.of(from / size, size);
+        return categoryStorage.findAll(pageable).getContent().stream().map(CategoryMapper::toCategoryDto).toList();
     }
 
     public CategoryDto getCategoryById(Long catId) {

@@ -7,6 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.categories.dto.CategoryDto;
@@ -47,7 +50,8 @@ public class CategoryPublicServiceTest {
     @Test
     void testGetCategories() {
         CategoryDto categoryDto2 = new CategoryDto(2L, "test2");
-        when(categoryStorage.findCategoryByParams(0,2)).thenReturn(List.of(category, category2));
+        Pageable pageable = PageRequest.of(0, 2);
+        when(categoryStorage.findAll(pageable)).thenReturn(new PageImpl<>(List.of(category, category2)));
         Assertions.assertEquals(List.of(categoryDto, categoryDto2), categoryPublicService.getCategories(0, 2));
     }
 
