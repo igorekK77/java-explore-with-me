@@ -36,6 +36,7 @@ public class CompilationAdminService {
         if (compilationCreateDto.getPinned() == null) {
             compilationCreateDto.setPinned(false);
         }
+
         List<Compilation> compilations = compilationStorage.findAllByTitle(compilationCreateDto.getTitle());
         if (!compilations.isEmpty()) {
             throw new ConflictException("Подборка с таким именем уже существует!");
