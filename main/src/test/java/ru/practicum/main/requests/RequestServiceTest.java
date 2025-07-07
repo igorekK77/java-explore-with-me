@@ -12,7 +12,6 @@ import ru.practicum.main.events.Event;
 import ru.practicum.main.events.EventState;
 import ru.practicum.main.events.EventStorage;
 import ru.practicum.main.exceptions.ConflictException;
-import ru.practicum.main.exceptions.ForbiddenException;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.requests.dto.RequestDto;
 import ru.practicum.main.requests.dto.RequestMapper;
@@ -141,30 +140,14 @@ public class RequestServiceTest {
     }
 
     @Test
-    void testCancelRequestWithEmptyUser() {
-        when(userStorage.findById(1L)).thenReturn(Optional.empty());
+    void testCancelRequestWithNotFoundRequest() {
+        when(requestStorage.findByIdAndInitiatorId(1L, 1L)).thenReturn(null);
         Assertions.assertThrows(NotFoundException.class, () -> requestService.cancelRequest(1L, 1L));
-    }
-
-    @Test
-    void testCancelRequestWithEmptyRequest() {
-        when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
-        when(requestStorage.findById(1L)).thenReturn(Optional.empty());
-        Assertions.assertThrows(NotFoundException.class, () -> requestService.cancelRequest(1L, 1L));
-    }
-
-    @Test
-    void testCancelRequestWithUserNotCreatedRequest() {
-        when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
-        request.setInitiator(ownerUser);
-        when(requestStorage.findById(1L)).thenReturn(Optional.of(request));
-        Assertions.assertThrows(ForbiddenException.class, () -> requestService.cancelRequest(1L, 1L));
     }
 
     @Test
     void testCancelRequest() {
-        when(userStorage.findById(1L)).thenReturn(Optional.of(requestedUser));
-        when(requestStorage.findById(1L)).thenReturn(Optional.of(request));
+        when(requestStorage.findByIdAndInitiatorId(1L, 1L)).thenReturn(request);
         when(requestStorage.save(any(Request.class))).thenReturn(request);
         RequestDto result = requestService.cancelRequest(1L, 1L);
         requestDto.setStatus(RequestState.CANCELED);

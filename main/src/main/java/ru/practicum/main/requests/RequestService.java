@@ -74,10 +74,11 @@ public class RequestService {
     }
 
     public RequestDto cancelRequest(Long userId, Long requestId) {
-        userStorage.findById(userId).orElseThrow(() -> new NotFoundException("Пользователя с ID = " +
-                userId + " не существует!"));
-        Request request = requestStorage.findById(requestId).orElseThrow(() -> new NotFoundException("Запрос с ID = " +
-                requestId + " не найден!"));
+        Request request = requestStorage.findByIdAndInitiatorId(requestId, userId);
+        if (request == null) {
+            throw new NotFoundException("Запрос с ID = " + requestId + " пользователя с ID = " + userId +
+                    " не найден!");
+        }
         if (!request.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Пользователь с ID = " + userId + " не создавал запрос для события с ID = " +
                     requestId + "!");
