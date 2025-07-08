@@ -1,5 +1,6 @@
 package ru.practicum.main.users;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody CreateUserDto createUserDto) {
+    public UserDto createUser(@RequestBody @Valid CreateUserDto createUserDto) {
         return userService.createUser(createUserDto);
     }
 

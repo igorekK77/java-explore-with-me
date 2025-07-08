@@ -1,5 +1,6 @@
 package ru.practicum.main.events.private_api;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class EventPrivateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventDto createEvent(@PathVariable Long userId, @RequestBody EventCreateDto eventCreateDto) {
+    public EventDto createEvent(@PathVariable Long userId, @RequestBody @Valid EventCreateDto eventCreateDto) {
         return eventService.createEvent(userId, eventCreateDto);
     }
 
@@ -44,7 +45,7 @@ public class EventPrivateController {
 
     @PatchMapping("/{eventId}")
     public EventDto updateEvent(@PathVariable Long userId, @PathVariable Long eventId,
-                                @RequestBody EventUpdateUserDto eventUpdateDto) {
+                                @RequestBody @Valid EventUpdateUserDto eventUpdateDto) {
         return eventService.updateEvent(userId, eventId, eventUpdateDto);
     }
 
