@@ -2,6 +2,7 @@ package ru.practicum.main.events.public_api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
@@ -25,6 +26,9 @@ public class EventPublicService {
     private final Statistics statistics;
     private final StatsClient statsClient;
 
+    @Value("${app.service-name}")
+    private String appName;
+
     public List<EventPublicDto> getEvents(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, boolean onlyAvailable, SortType sort, int from,
                                           int size, HttpServletRequest httpServletRequest) {
@@ -45,7 +49,7 @@ public class EventPublicService {
             categoryIds = null;
         }
 
-        statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),
+        statsClient.createStats(appName, httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
 
         List<Event> events;
@@ -85,7 +89,7 @@ public class EventPublicService {
         if (eventDto.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("Событие с ID = " + eventId + " не найдено!");
         }
-        statsClient.createStats("EventPublicService", httpServletRequest.getRequestURI(),
+        statsClient.createStats(appName, httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
 
         return statistics.searchStatistics(List.of(eventDto)).getFirst();
