@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.events.SortType;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventPublicDto;
+import ru.practicum.main.events.dto.EventPublicParametersDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,8 +35,9 @@ public class EventPublicController {
                                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                           @RequestParam(defaultValue = "10") @Positive int size,
                                           HttpServletRequest httpServletRequest) {
-        return eventPublicService.getEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from,
-                size, httpServletRequest);
+        EventPublicParametersDto eventPublicParametersDto = new EventPublicParametersDto(text, categories, paid,
+                rangeStart, rangeEnd, onlyAvailable, sort, from, size, httpServletRequest);
+        return eventPublicService.getEvents(eventPublicParametersDto);
     }
 
     @GetMapping("/{id}")

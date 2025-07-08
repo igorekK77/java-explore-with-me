@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.events.*;
+import ru.practicum.main.events.dto.EventAdminParametersDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
@@ -29,8 +30,15 @@ public class EventAdminService {
     private final UserStorage userStorage;
     private final Statistics statistics;
 
-    public List<EventDto> getEvents(List<Long> userIds, List<EventState> states, List<Long> categoryIds, LocalDateTime
-            startTime, LocalDateTime endTime, int from, int size) {
+    public List<EventDto> getEvents(EventAdminParametersDto eventAdminParametersDto) {
+        List<Long> userIds = eventAdminParametersDto.getUsers();
+        List<EventState> states = eventAdminParametersDto.getStates();
+        List<Long> categoryIds = eventAdminParametersDto.getCategories();
+        LocalDateTime startTime = eventAdminParametersDto.getStartTime();
+        LocalDateTime endTime = eventAdminParametersDto.getEndTime();
+        int from = eventAdminParametersDto.getFrom();
+        int size = eventAdminParametersDto.getSize();
+
         if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
             throw new ValidationException("Даты указаны неправильно!");
         }

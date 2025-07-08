@@ -10,6 +10,7 @@ import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventPublicDto;
+import ru.practicum.main.events.dto.EventPublicParametersDto;
 import ru.practicum.main.exceptions.NotFoundException;
 import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.statistics.client.StatsClient;
@@ -29,9 +30,18 @@ public class EventPublicService {
     @Value("${app.service-name}")
     private String appName;
 
-    public List<EventPublicDto> getEvents(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
-                                          LocalDateTime rangeEnd, boolean onlyAvailable, SortType sort, int from,
-                                          int size, HttpServletRequest httpServletRequest) {
+    public List<EventPublicDto> getEvents(EventPublicParametersDto eventPublicParametersDto) {
+        String text = eventPublicParametersDto.getText();
+        List<Long> categoryIds = eventPublicParametersDto.getCategories();
+        Boolean paid = eventPublicParametersDto.getPaid();
+        LocalDateTime rangeStart = eventPublicParametersDto.getRangeStart();
+        LocalDateTime rangeEnd = eventPublicParametersDto.getRangeEnd();
+        boolean onlyAvailable = eventPublicParametersDto.isOnlyAvailable();
+        SortType sort = eventPublicParametersDto.getSort();
+        int from = eventPublicParametersDto.getFrom();
+        int size = eventPublicParametersDto.getSize();
+        HttpServletRequest httpServletRequest = eventPublicParametersDto.getHttpServletRequest();
+
         if (text == null) {
             text = "";
         }

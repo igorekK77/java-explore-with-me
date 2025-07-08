@@ -16,6 +16,7 @@ import ru.practicum.main.events.EventState;
 import ru.practicum.main.events.SortType;
 import ru.practicum.main.events.dto.EventMapper;
 import ru.practicum.main.events.dto.EventPublicDto;
+import ru.practicum.main.events.dto.EventPublicParametersDto;
 import ru.practicum.main.users.User;
 
 import java.time.LocalDateTime;
@@ -62,9 +63,10 @@ public class EventPublicControllerTest {
     void testGetEvents() throws Exception {
         LocalDateTime startTime = LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(formatter), formatter);
         LocalDateTime endTime = LocalDateTime.parse(LocalDateTime.now().plusDays(1).format(formatter), formatter);
-        when(eventPublicService.getEvents(eq("test"), eq(List.of(1L)), eq(true), eq(startTime),
-                eq(endTime), eq(true), eq(SortType.VIEWS), eq(0), eq(1),
-                any(HttpServletRequest.class))).thenReturn(List.of(eventPublicDto));
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        EventPublicParametersDto eventPublicParametersDto = new EventPublicParametersDto("test", List.of(1L),
+                true, startTime, endTime, true, SortType.VIEWS, 0, 1, request);
+        when(eventPublicService.getEvents(eventPublicParametersDto)).thenReturn(List.of(eventPublicDto));
         mockMvc.perform(get("/events")
                         .param("text", "test")
                         .param("categories", "1")
@@ -82,9 +84,7 @@ public class EventPublicControllerTest {
                 .andExpect(jsonPath("$[0].paid").value(true))
                 .andExpect(jsonPath("$[0].title").value("test"))
                 .andExpect(jsonPath("$[0].views").value(2));
-        verify(eventPublicService, times(1)).getEvents(eq("test"), eq(List.of(1L)),
-                eq(true), eq(startTime), eq(endTime), eq(true), eq(SortType.VIEWS), eq(0), eq(1),
-                any(HttpServletRequest.class));
+        verify(eventPublicService, times(1)).getEvents(eventPublicParametersDto);
     }
 
     @Test
