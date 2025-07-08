@@ -1,11 +1,14 @@
-package ru.practicum.main.events.private_api;
+package ru.practicum.main.events;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
-import ru.practicum.main.events.*;
 import ru.practicum.main.events.dto.*;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
@@ -19,20 +22,24 @@ import ru.practicum.main.requests.dto.RequestMapper;
 import ru.practicum.main.requests.dto.RequestUpdateStatusDto;
 import ru.practicum.main.users.User;
 import ru.practicum.main.users.UserStorage;
+import ru.practicum.statistics.client.StatsClient;
+import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class EventPrivateService {
+public class EventService {
 
     private final EventStorage eventStorage;
     private final UserStorage userStorage;
     private final CategoryStorage categoryStorage;
-    private final Statistics statistics;
+    private final StatsClient statsClient;
     private final RequestStorage requestStorage;
+
+    @Value("${app.service-name}")
+    private String appName;
 
     public EventDto createEvent(Long userId, EventCreateDto eventCreateDto) {
         User initiator = checkExistsUser(userId);
@@ -86,7 +93,7 @@ public class EventPrivateService {
         Pageable pageable = PageRequest.of(from / size, size);
         List<EventDto> userEvents = eventStorage.findAllByInitiatorId(initiator.getId(), pageable).getContent().stream()
                 .map(EventMapper::toEventDto).toList();
-        return statistics.searchStatistics(userEvents);
+        return searchStatistics(userEvents);
     }
 
     public EventDto getEventById(Long userId, Long eventId) {
@@ -94,7 +101,7 @@ public class EventPrivateService {
         EventDto eventDto = EventMapper.toEventDto(eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
                 + initiator.getId())));
-        return statistics.searchStatistics(List.of(eventDto)).getFirst();
+        return searchStatistics(List.of(eventDto)).getFirst();
     }
 
     public EventDto updateEvent(Long userId, Long eventId, EventUpdateUserDto eventUpdateDto) {
@@ -156,7 +163,7 @@ public class EventPrivateService {
             event.setState(EventState.PENDING);
         }
         Event updatedEvent = eventStorage.save(event);
-        return statistics.searchStatistics(List.of(EventMapper.toEventDto(updatedEvent))).getFirst();
+        return searchStatistics(List.of(EventMapper.toEventDto(updatedEvent))).getFirst();
     }
 
     public List<RequestDto> getEventRequests(Long userId, Long eventId) {
@@ -218,6 +225,208 @@ public class EventPrivateService {
         return new ConfirmedAndRejectedRequestsDto(confirmedRequests, rejectedRequests);
     }
 
+    public List<EventDto> getAdminEvents(EventAdminParametersDto eventAdminParametersDto) {
+        List<Long> userIds = eventAdminParametersDto.getUsers();
+        List<EventState> states = eventAdminParametersDto.getStates();
+        List<Long> categoryIds = eventAdminParametersDto.getCategories();
+        LocalDateTime startTime = eventAdminParametersDto.getStartTime();
+        LocalDateTime endTime = eventAdminParametersDto.getEndTime();
+        int from = eventAdminParametersDto.getFrom();
+        int size = eventAdminParametersDto.getSize();
+
+        if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
+            throw new ValidationException("Даты указаны неправильно!");
+        }
+        if (categoryIds != null) {
+            List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
+            for (Long categoryId: categoryIds) {
+                if (!categories.contains(categoryId)) {
+                    throw new NotFoundException("Категории с ID = " + categoryId + " не существует!");
+                }
+            }
+        }
+        if (userIds != null) {
+            List<Long> existsUsers = userStorage.findAllByIdIn(userIds).stream().map(User::getId).toList();
+            if (existsUsers.size() != userIds.size()) {
+                for (Long userId : userIds) {
+                    if (!existsUsers.contains(userId)) {
+                        throw new NotFoundException("Пользователя с ID = " + userId + " не существует!");
+                    }
+                }
+            }
+        }
+        if (userIds != null && userIds.isEmpty()) {
+            userIds = null;
+        }
+        if (states != null && states.isEmpty()) {
+            states = null;
+        }
+        if (categoryIds != null && categoryIds.isEmpty()) {
+            categoryIds = null;
+        }
+        Pageable page = PageRequest.of(from / size, size);
+        Page<Event> eventsPage;
+        if (startTime == null || endTime == null) {
+            eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, page);
+        } else {
+            eventsPage = eventStorage.findAllByParams(userIds, states, categoryIds, startTime, endTime, page);
+        }
+        List<Event> events = eventsPage.getContent();
+        return searchStatistics(events.stream().map(EventMapper::toEventDto).toList());
+    }
+
+    public EventDto updateEvent(Long eventId, EventUpdateAdminDto eventUpdateDto) {
+        EventDto eventDto = EventMapper.toEventDto(eventStorage.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с ID = " + eventId + " не найдено!")));
+        Event event = EventMapper.toEventFromEventDto(eventDto);
+        if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
+                .plusHours(2))) {
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
+                    "чем через два часа от текущего момента");
+        }
+        if (eventUpdateDto.getDescription() != null && (eventUpdateDto.getDescription().length() < 20 ||
+                eventUpdateDto.getDescription().length() > 7000)) {
+            throw new ValidationException("Описание должно содержать от 20 до 7000 символов!");
+        }
+        if (eventUpdateDto.getAnnotation() != null && (eventUpdateDto.getAnnotation().length() < 20 ||
+                eventUpdateDto.getAnnotation().length() > 2000)) {
+            throw new ValidationException("Аннотация должна содержать от 20 до 2000 символов!");
+        }
+        if (eventUpdateDto.getTitle() != null && (eventUpdateDto.getTitle().length() < 3 ||
+                eventUpdateDto.getTitle().length() > 120)) {
+            throw new ValidationException("Название должно содержать от 3 до 120 символов!");
+        }
+        if (eventUpdateDto.getEventDate() != null) {
+            event.setEventDate(eventUpdateDto.getEventDate());
+        }
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
+            if (event.getState() == EventState.PENDING) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else {
+                throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания " +
+                        "публикации");
+            }
+        }
+        if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT) {
+            if (event.getState() == EventState.PENDING) {
+                event.setState(EventState.REJECTED);
+            } else {
+                throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
+            }
+        }
+        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().equals(event.getAnnotation())) {
+            event.setAnnotation(eventUpdateDto.getAnnotation());
+        }
+        if (eventUpdateDto.getCategory() != null && !eventUpdateDto.getCategory().equals(event.getCategory().getId())) {
+            event.setCategory(categoryStorage.findById(eventUpdateDto.getCategory()).orElseThrow(() ->
+                    new NotFoundException("Категория с ID = " + eventUpdateDto.getCategory() + " не найдена!")));
+        }
+        if (eventUpdateDto.getDescription() != null && !eventUpdateDto.getDescription().equals(event
+                .getDescription())) {
+            event.setDescription(eventUpdateDto.getDescription());
+        }
+        if (eventUpdateDto.getLocation() != null && !eventUpdateDto.getLocation().getLat().equals(event
+                .getLocationLat())) {
+            event.setLocationLat(eventUpdateDto.getLocation().getLat());
+        }
+        if (eventUpdateDto.getLocation() != null && !eventUpdateDto.getLocation().getLon().equals(event
+                .getLocationLon())) {
+            event.setLocationLon(eventUpdateDto.getLocation().getLon());
+        }
+        if (eventUpdateDto.getPaid() != null && !eventUpdateDto.getPaid().equals(event.isPaid())) {
+            event.setPaid(eventUpdateDto.getPaid());
+        }
+        if (eventUpdateDto.getParticipantLimit() != null && !eventUpdateDto.getParticipantLimit().equals(event
+                .getParticipantLimit())) {
+            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
+        }
+        if (eventUpdateDto.getRequestModeration() != null && !eventUpdateDto.getRequestModeration().equals(event
+                .isRequestModeration())) {
+            event.setRequestModeration(eventUpdateDto.getRequestModeration());
+        }
+        if (eventUpdateDto.getTitle() != null && !eventUpdateDto.getTitle().equals(event.getTitle())) {
+            event.setTitle(eventUpdateDto.getTitle());
+        }
+        Event updateEvent = eventStorage.save(event);
+        return EventMapper.toEventDto(updateEvent);
+    }
+
+    public List<EventPublicDto> getPublicEvents(EventPublicParametersDto eventPublicParametersDto) {
+        String text = eventPublicParametersDto.getText();
+        List<Long> categoryIds = eventPublicParametersDto.getCategories();
+        Boolean paid = eventPublicParametersDto.getPaid();
+        LocalDateTime rangeStart = eventPublicParametersDto.getRangeStart();
+        LocalDateTime rangeEnd = eventPublicParametersDto.getRangeEnd();
+        boolean onlyAvailable = eventPublicParametersDto.isOnlyAvailable();
+        SortType sort = eventPublicParametersDto.getSort();
+        int from = eventPublicParametersDto.getFrom();
+        int size = eventPublicParametersDto.getSize();
+        HttpServletRequest httpServletRequest = eventPublicParametersDto.getHttpServletRequest();
+
+        if (text == null) {
+            text = "";
+        }
+        if (categoryIds != null) {
+            List<Long> categories = categoryStorage.findAll().stream().map(Category::getId).toList();
+            if (categories.size() != categoryIds.size()) {
+                for (Long categoryId : categoryIds) {
+                    if (!categories.contains(categoryId)) {
+                        throw new ValidationException("Категории с ID = " + categoryId + " не существует!");
+                    }
+                }
+            }
+        }
+        if (categoryIds != null && categoryIds.isEmpty()) {
+            categoryIds = null;
+        }
+
+        statsClient.createStats(appName, httpServletRequest.getRequestURI(),
+                httpServletRequest.getRemoteAddr());
+
+        List<Event> events;
+
+        if (onlyAvailable) {
+            if (rangeStart == null || rangeEnd == null) {
+                events = eventStorage.findAllByPublicParamsWithNotDates(text, categoryIds, paid,
+                        LocalDateTime.now(), EventState.PUBLISHED);
+            } else {
+                events = eventStorage.findAllByPublicParams(text, categoryIds, paid, rangeStart, rangeEnd,
+                        EventState.PUBLISHED);
+            }
+        } else {
+            if (rangeStart == null || rangeEnd == null) {
+                events = eventStorage.findAllByPublicParamsWithNotDatesAndNotOnlyAvailable(text,
+                        categoryIds, LocalDateTime.now(), EventState.PUBLISHED, paid);
+            } else {
+                events = eventStorage.findAllByPublicParamsWithNotOnlyAvailable(text, categoryIds, paid,
+                        rangeStart, rangeEnd, EventState.PUBLISHED);
+            }
+        }
+        List<EventDto> eventsDto = events.stream().map(EventMapper::toEventDto).toList();
+        eventsDto = searchStatistics(eventsDto);
+
+        if (sort == SortType.EVENT_DATE) {
+            return eventsDto.stream().sorted(Comparator.comparing(EventDto::getEventDate))
+                    .skip(from).limit(size).map(EventMapper::toEventPublicDtoFromEventDto).toList();
+        } else {
+            return eventsDto.stream().sorted(Comparator.comparing(EventDto::getViews).reversed())
+                    .skip(from).limit(size).map(EventMapper::toEventPublicDtoFromEventDto).toList();
+        }
+    }
+
+    public EventDto getEventById(Long eventId, HttpServletRequest httpServletRequest) {
+        EventDto eventDto = EventMapper.toEventDto(eventStorage.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с ID = " + eventId + " не найдено!")));
+        if (eventDto.getState() != EventState.PUBLISHED) {
+            throw new NotFoundException("Событие с ID = " + eventId + " не найдено!");
+        }
+        statsClient.createStats(appName, httpServletRequest.getRequestURI(),
+                httpServletRequest.getRemoteAddr());
+
+        return searchStatistics(List.of(eventDto)).getFirst();
+    }
+
     private User checkExistsUser(Long userId) {
         return userStorage.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с ID: " +
                 userId + "не найден!"));
@@ -251,6 +460,24 @@ public class EventPrivateService {
                 eventCreateDto.getTitle().length() > 120)) {
             throw new ValidationException("Название должно содержать от 3 до 120 символов!");
         }
+    }
+
+    public List<EventDto> searchStatistics(List<EventDto> events) {
+        List<String> uris = events.stream()
+                .map(event -> "/events/" + event.getId())
+                .toList();
+        List<StatisticsDto> allStatistics = statsClient.getStatistics(LocalDateTime.now().minusYears(1),
+                LocalDateTime.now(), uris, true);
+        Map<String, StatisticsDto> statisticsMap = new HashMap<>();
+        for (StatisticsDto statisticsDto : allStatistics) {
+            statisticsMap.put(statisticsDto.getUri(), statisticsDto);
+        }
+        for (EventDto event : events) {
+            if (statisticsMap.containsKey("/events/" + event.getId())) {
+                event.setViews(statisticsMap.get("/events/" + event.getId()).getHits());
+            }
+        }
+        return events;
     }
 
 }

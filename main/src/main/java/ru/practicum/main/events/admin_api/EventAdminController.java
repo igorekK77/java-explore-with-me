@@ -10,6 +10,7 @@ import ru.practicum.main.events.EventState;
 import ru.practicum.main.events.dto.EventAdminParametersDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
+import ru.practicum.main.events.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class EventAdminController {
-    private final EventAdminService eventAdminService;
+    private final EventService eventService;
 
     @GetMapping
     public List<EventDto> getEvents(@RequestParam(required = false) List<Long> users,
@@ -32,11 +33,11 @@ public class EventAdminController {
                                     @RequestParam(defaultValue = "10") @Positive int size) {
         EventAdminParametersDto eventAdminParametersDto = new EventAdminParametersDto(users, states, categories,
                 startTime, endTime, from, size);
-        return eventAdminService.getEvents(eventAdminParametersDto);
+        return eventService.getAdminEvents(eventAdminParametersDto);
     }
 
     @PatchMapping("/{eventId}")
     public EventDto updateEvent(@PathVariable Long eventId, @RequestBody EventUpdateAdminDto eventUpdateDto) {
-        return eventAdminService.updateEvent(eventId, eventUpdateDto);
+        return eventService.updateEvent(eventId, eventUpdateDto);
     }
 }

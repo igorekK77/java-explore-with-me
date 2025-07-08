@@ -6,13 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.main.categories.admin_api.CategoryAdminService;
+import ru.practicum.main.categories.CategoryService;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.LocationDto;
-import ru.practicum.main.events.private_api.EventPrivateService;
 import ru.practicum.main.users.UserService;
 import ru.practicum.main.users.dto.CreateUserDto;
 import ru.practicum.main.users.dto.UserDto;
@@ -24,9 +23,9 @@ import java.time.format.DateTimeFormatter;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class EventsPrivateServiceIntegrationTest {
-    private final EventPrivateService eventPrivateService;
+    private final EventService eventService;
     private final UserService userService;
-    private final CategoryAdminService categoryAdminService;
+    private final CategoryService categoryService;
 
     private EventCreateDto eventCreateDto;
     private CreateUserDto createUserDto;
@@ -54,9 +53,9 @@ public class EventsPrivateServiceIntegrationTest {
     @Test
     void testCreateEvent() {
         UserDto userDto = userService.createUser(createUserDto);
-        CategoryDto categoryDto = categoryAdminService.createCategory(categoryCreateDto);
+        CategoryDto categoryDto = categoryService.createCategory(categoryCreateDto);
         eventCreateDto.setCategory(categoryDto.getId());
-        EventDto eventDto = eventPrivateService.createEvent(userDto.getId(), eventCreateDto);
+        EventDto eventDto = eventService.createEvent(userDto.getId(), eventCreateDto);
         System.out.println(eventDto);
     }
 }

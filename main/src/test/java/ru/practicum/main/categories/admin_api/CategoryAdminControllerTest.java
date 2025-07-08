@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.main.categories.CategoryService;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class CategoryAdminControllerTest {
     @Mock
-    private CategoryAdminService categoryAdminService;
+    private CategoryService categoryService;
 
     @InjectMocks
     private CategoryAdminController categoryAdminController;
@@ -43,13 +44,13 @@ public class CategoryAdminControllerTest {
     void testCreateCategory() throws Exception {
         CategoryCreateDto categoryCreateDto = new CategoryCreateDto("test");
         String categoryJson = objectMapper.writeValueAsString(categoryCreateDto);
-        when(categoryAdminService.createCategory(categoryCreateDto)).thenReturn(categoryDto);
+        when(categoryService.createCategory(categoryCreateDto)).thenReturn(categoryDto);
         mockMvc.perform(post("/admin/categories").content(categoryJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("test"));
-        verify(categoryAdminService, times(1)).createCategory(categoryCreateDto);
+        verify(categoryService, times(1)).createCategory(categoryCreateDto);
     }
 
     @Test
@@ -57,13 +58,13 @@ public class CategoryAdminControllerTest {
         CategoryCreateDto categoryUpdateDto = new CategoryCreateDto("updateTest");
         String categoryJson = objectMapper.writeValueAsString(categoryUpdateDto);
         categoryDto.setName("updateTest");
-        when(categoryAdminService.updateCategory(1L, categoryUpdateDto)).thenReturn(categoryDto);
+        when(categoryService.updateCategory(1L, categoryUpdateDto)).thenReturn(categoryDto);
         mockMvc.perform(patch("/admin/categories/1").content(categoryJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("updateTest"));
-        verify(categoryAdminService, times(1)).updateCategory(1L, categoryUpdateDto);
+        verify(categoryService, times(1)).updateCategory(1L, categoryUpdateDto);
     }
 
     @Test

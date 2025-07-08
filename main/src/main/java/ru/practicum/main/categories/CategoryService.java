@@ -1,9 +1,9 @@
-package ru.practicum.main.categories.admin_api;
+package ru.practicum.main.categories;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.main.categories.Category;
-import ru.practicum.main.categories.CategoryStorage;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.categories.dto.CategoryMapper;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryAdminService {
+public class CategoryService {
 
     private final CategoryStorage categoryStorage;
     private final EventStorage eventStorage;
@@ -54,5 +54,17 @@ public class CategoryAdminService {
             throw new ConflictException("У категории с ID = " + catId + " есть привязанные события!");
         }
         categoryStorage.deleteById(catId);
+    }
+
+    public List<CategoryDto> getCategories(int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        return categoryStorage.findAll(pageable).getContent().stream().map(CategoryMapper::toCategoryDto).toList();
+    }
+
+    public CategoryDto getCategoryById(Long catId) {
+        if (categoryStorage.findById(catId).isEmpty()) {
+            throw new NotFoundException("Категории с Id " + catId + " не существует");
+        }
+        return CategoryMapper.toCategoryDto(categoryStorage.findById(catId).get());
     }
 }

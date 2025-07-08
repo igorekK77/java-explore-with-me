@@ -1,4 +1,4 @@
-package ru.practicum.main.categories.admin_api;
+package ru.practicum.main.categories;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,8 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.main.categories.Category;
-import ru.practicum.main.categories.CategoryStorage;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.categories.dto.CategoryMapper;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class CategoryAdminServiceTest {
+public class CategoryServiceTest {
     @Mock
     private CategoryStorage categoryStorage;
 
@@ -31,7 +32,7 @@ public class CategoryAdminServiceTest {
     private EventStorage eventStorage;
 
     @InjectMocks
-    private CategoryAdminService categoryAdminService;
+    private CategoryService categoryService;
 
     private CategoryCreateDto categoryCreateDto;
 
@@ -55,7 +56,7 @@ public class CategoryAdminServiceTest {
     @Test
     void testCreateCategoryWithUsedName() {
         when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category);
-        Assertions.assertThrows(ConflictException.class, () -> categoryAdminService.createCategory(categoryCreateDto));
+        Assertions.assertThrows(ConflictException.class, () -> categoryService.createCategory(categoryCreateDto));
     }
 
     @Test
@@ -63,13 +64,13 @@ public class CategoryAdminServiceTest {
         when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(null);
         when(categoryStorage.save(CategoryMapper.toCategoryFromCreateDto(categoryCreateDto)))
                 .thenReturn(category);
-        Assertions.assertEquals(categoryDto, categoryAdminService.createCategory(categoryCreateDto));
+        Assertions.assertEquals(categoryDto, categoryService.createCategory(categoryCreateDto));
     }
 
     @Test
     void testUpdateCategoryWithNotFound() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.empty());
-        Assertions.assertThrows(NotFoundException.class, () -> categoryAdminService.updateCategory(1L,
+        Assertions.assertThrows(NotFoundException.class, () -> categoryService.updateCategory(1L,
                 categoryCreateDto));
     }
 
@@ -77,7 +78,7 @@ public class CategoryAdminServiceTest {
     void testUpdateCategoryWithUsedName() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
         when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category2);
-        Assertions.assertThrows(ConflictException.class, () -> categoryAdminService.updateCategory(1L,
+        Assertions.assertThrows(ConflictException.class, () -> categoryService.updateCategory(1L,
                 categoryCreateDto));
     }
 
@@ -91,20 +92,40 @@ public class CategoryAdminServiceTest {
         Category updatedCategory = CategoryMapper.toCategoryFromCreateDto(categoryUpdateDto);
         updatedCategory.setId(1L);
         when(categoryStorage.save(updatedCategory)).thenReturn(category);
-        Assertions.assertEquals(categoryDto, categoryAdminService.updateCategory(1L, categoryUpdateDto));
+        Assertions.assertEquals(categoryDto, categoryService.updateCategory(1L, categoryUpdateDto));
     }
 
     @Test
     void testDeleteCategoryWithNotFound() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.empty());
-        Assertions.assertThrows(NotFoundException.class, () -> categoryAdminService.deleteCategory(1L));
+        Assertions.assertThrows(NotFoundException.class, () -> categoryService.deleteCategory(1L));
     }
 
     @Test
     void testDeleteCategory() {
         when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
         when(eventStorage.findAllByCategoryId(category.getId())).thenReturn(List.of());
-        categoryAdminService.deleteCategory(1L);
+        categoryService.deleteCategory(1L);
         verify(categoryStorage, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testGetCategories() {
+        CategoryDto categoryDto2 = new CategoryDto(2L, "test2");
+        Pageable pageable = PageRequest.of(0, 2);
+        when(categoryStorage.findAll(pageable)).thenReturn(new PageImpl<>(List.of(category, category2)));
+        Assertions.assertEquals(List.of(categoryDto, categoryDto2), categoryService.getCategories(0, 2));
+    }
+
+    @Test
+    void testGetCategoryByIdWithNotFound() {
+        when(categoryStorage.findById(1L)).thenReturn(Optional.empty());
+        Assertions.assertThrows(NotFoundException.class, () -> categoryService.getCategoryById(1L));
+    }
+
+    @Test
+    void testGetCategoryById() {
+        when(categoryStorage.findById(1L)).thenReturn(Optional.of(category));
+        Assertions.assertEquals(categoryDto, categoryService.getCategoryById(1L));
     }
 }

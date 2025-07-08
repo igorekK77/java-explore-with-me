@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.events.Event;
+import ru.practicum.main.events.EventService;
 import ru.practicum.main.events.EventState;
 import ru.practicum.main.events.SortType;
 import ru.practicum.main.events.dto.EventMapper;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class EventPublicControllerTest {
     @Mock
-    private EventPublicService eventPublicService;
+    private EventService eventService;
 
     @InjectMocks
     private EventPublicController eventPublicController;
@@ -66,7 +67,7 @@ public class EventPublicControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         EventPublicParametersDto eventPublicParametersDto = new EventPublicParametersDto("test", List.of(1L),
                 true, startTime, endTime, true, SortType.VIEWS, 0, 1, request);
-        when(eventPublicService.getEvents(eventPublicParametersDto)).thenReturn(List.of(eventPublicDto));
+        when(eventService.getPublicEvents(eventPublicParametersDto)).thenReturn(List.of(eventPublicDto));
         mockMvc.perform(get("/events")
                         .param("text", "test")
                         .param("categories", "1")
@@ -84,12 +85,12 @@ public class EventPublicControllerTest {
                 .andExpect(jsonPath("$[0].paid").value(true))
                 .andExpect(jsonPath("$[0].title").value("test"))
                 .andExpect(jsonPath("$[0].views").value(2));
-        verify(eventPublicService, times(1)).getEvents(eventPublicParametersDto);
+        verify(eventService, times(1)).getPublicEvents(eventPublicParametersDto);
     }
 
     @Test
     void testGetEventById() throws Exception {
-        when(eventPublicService.getEventById(eq(1L), any(HttpServletRequest.class)))
+        when(eventService.getEventById(eq(1L), any(HttpServletRequest.class)))
                 .thenReturn(EventMapper.toEventDto(event));
         mockMvc.perform(get("/events/1"))
                 .andExpect(status().isOk())
@@ -98,7 +99,7 @@ public class EventPublicControllerTest {
                 .andExpect(jsonPath("$.confirmedRequests").value(3))
                 .andExpect(jsonPath("$.paid").value(true))
                 .andExpect(jsonPath("$.title").value("test"));
-        verify(eventPublicService, times(1)).getEventById(eq(1L),
+        verify(eventService, times(1)).getEventById(eq(1L),
                 any(HttpServletRequest.class));
     }
 }

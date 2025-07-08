@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.events.EventService;
 import ru.practicum.main.events.SortType;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventPublicDto;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class EventPublicController {
-    private final EventPublicService eventPublicService;
+    private final EventService eventService;
 
     @GetMapping
     public List<EventPublicDto> getEvents(@RequestParam(required = false) String text,
@@ -37,11 +38,11 @@ public class EventPublicController {
                                           HttpServletRequest httpServletRequest) {
         EventPublicParametersDto eventPublicParametersDto = new EventPublicParametersDto(text, categories, paid,
                 rangeStart, rangeEnd, onlyAvailable, sort, from, size, httpServletRequest);
-        return eventPublicService.getEvents(eventPublicParametersDto);
+        return eventService.getPublicEvents(eventPublicParametersDto);
     }
 
     @GetMapping("/{id}")
     public EventDto getEventById(@PathVariable Long id, HttpServletRequest httpServletRequest) {
-        return eventPublicService.getEventById(id, httpServletRequest);
+        return eventService.getEventById(id, httpServletRequest);
     }
 }

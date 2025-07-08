@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.main.categories.CategoryService;
 import ru.practicum.main.categories.dto.CategoryDto;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class CategoryPublicControllerTest {
     @Mock
-    private CategoryPublicService categoryPublicService;
+    private CategoryService categoryService;
 
     @InjectMocks
     private CategoryPublicController categoryPublicController;
@@ -42,24 +43,24 @@ public class CategoryPublicControllerTest {
     @Test
     void testGetCategories() throws Exception {
         CategoryDto categoryDto2 = new CategoryDto(2L, "test2");
-        when(categoryPublicService.getCategories(0, 2)).thenReturn(List.of(categoryDto, categoryDto2));
+        when(categoryService.getCategories(0, 2)).thenReturn(List.of(categoryDto, categoryDto2));
         mockMvc.perform(get("/categories?from=0&size=2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[0].name").value("test"))
                 .andExpect(jsonPath("$[1].name").value("test2"));
-        verify(categoryPublicService, times(1)).getCategories(0, 2);
+        verify(categoryService, times(1)).getCategories(0, 2);
     }
 
     @Test
     void testGetCategoryById() throws Exception {
-        when(categoryPublicService.getCategoryById(1L)).thenReturn(categoryDto);
+        when(categoryService.getCategoryById(1L)).thenReturn(categoryDto);
         mockMvc.perform(get("/categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("test"));
-        verify(categoryPublicService, times(1)).getCategoryById(1L);
+        verify(categoryService, times(1)).getCategoryById(1L);
     }
 
 }

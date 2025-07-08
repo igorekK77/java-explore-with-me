@@ -7,16 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.main.categories.admin_api.CategoryAdminService;
+import ru.practicum.main.categories.CategoryService;
 import ru.practicum.main.categories.dto.CategoryCreateDto;
 import ru.practicum.main.categories.dto.CategoryDto;
 import ru.practicum.main.events.StateAction;
-import ru.practicum.main.events.admin_api.EventAdminService;
 import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
 import ru.practicum.main.events.dto.LocationDto;
-import ru.practicum.main.events.private_api.EventPrivateService;
+import ru.practicum.main.events.EventService;
 import ru.practicum.main.requests.dto.RequestDto;
 import ru.practicum.main.users.UserService;
 import ru.practicum.main.users.dto.CreateUserDto;
@@ -31,9 +30,8 @@ import java.time.format.DateTimeFormatter;
 public class RequestServiceIntegrationTest {
     private final RequestService requestService;
     private final UserService userService;
-    private final EventPrivateService eventPrivateService;
-    private final CategoryAdminService categoryAdminService;
-    private final EventAdminService eventAdminService;
+    private final EventService eventService;
+    private final CategoryService categoryService;
 
     private CreateUserDto createUserDto;
 
@@ -87,11 +85,11 @@ public class RequestServiceIntegrationTest {
     void testCreateRequest() {
         UserDto userDto = userService.createUser(createUserDto);
         UserDto userDto2 = userService.createUser(createUserDto2);
-        CategoryDto categoryDto = categoryAdminService.createCategory(categoryCreateDto);
+        CategoryDto categoryDto = categoryService.createCategory(categoryCreateDto);
         eventCreateDto.setCategory(categoryDto.getId());
         eventUpdateAdminDto.setCategory(categoryDto.getId());
-        EventDto eventDto = eventPrivateService.createEvent(userDto2.getId(), eventCreateDto);
-        eventAdminService.updateEvent(eventDto.getId(), eventUpdateAdminDto);
+        EventDto eventDto = eventService.createEvent(userDto2.getId(), eventCreateDto);
+        eventService.updateEvent(eventDto.getId(), eventUpdateAdminDto);
         RequestDto saveRequestDto = requestService.createRequest(userDto.getId(), eventDto.getId());
         requestDto.setId(saveRequestDto.getId());
         requestDto.setRequester(userDto.getId());

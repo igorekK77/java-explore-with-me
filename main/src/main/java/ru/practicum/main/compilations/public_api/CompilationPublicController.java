@@ -5,6 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.compilations.CompilationService;
 import ru.practicum.main.compilations.dto.CompilationDto;
 
 import java.util.List;
@@ -14,17 +15,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class CompilationPublicController {
-    private final CompilationPublicService compilationPublicService;
+    private final CompilationService compilationService;
 
     @GetMapping
     public List<CompilationDto> getCompilations(@RequestParam(defaultValue = "false") boolean pinned,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                                 @RequestParam(defaultValue = "10") @Positive int size) {
-        return compilationPublicService.getCompilations(pinned, from, size);
+        return compilationService.getCompilations(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilation(@PathVariable Long compId) {
-        return compilationPublicService.getCompilation(compId);
+        return compilationService.getCompilation(compId);
     }
 }
