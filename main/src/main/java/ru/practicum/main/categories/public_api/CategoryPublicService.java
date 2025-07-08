@@ -18,9 +18,6 @@ public class CategoryPublicService {
     private final CategoryStorage categoryStorage;
 
     public List<CategoryDto> getCategories(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException(("Запрос составлен некорректно"));
-        }
         Pageable pageable = PageRequest.of(from / size, size);
         return categoryStorage.findAll(pageable).getContent().stream().map(CategoryMapper::toCategoryDto).toList();
     }

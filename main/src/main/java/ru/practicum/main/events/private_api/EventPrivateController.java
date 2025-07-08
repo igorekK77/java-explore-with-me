@@ -1,7 +1,10 @@
 package ru.practicum.main.events.private_api;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.events.dto.EventCreateDto;
 import ru.practicum.main.events.dto.EventDto;
@@ -15,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
+@Validated
 public class EventPrivateController {
 
     private final EventPrivateService eventPrivateService;
@@ -26,8 +30,9 @@ public class EventPrivateController {
     }
 
     @GetMapping
-    public List<EventDto> getEventsUser(@PathVariable Long userId, @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size) {
+    public List<EventDto> getEventsUser(@PathVariable Long userId,
+                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                        @RequestParam(defaultValue = "10") @Positive int size) {
         return eventPrivateService.getEventsUser(userId, from, size);
     }
 

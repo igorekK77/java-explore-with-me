@@ -83,9 +83,6 @@ public class EventPrivateService {
 
     public List<EventDto> getEventsUser(Long userId, int from, int size) {
         User initiator = checkExistsUser(userId);
-        if (from < 0 || size < 0) {
-            throw new ValidationException(("Запрос составлен некорректно"));
-        }
         Pageable pageable = PageRequest.of(from / size, size);
         List<EventDto> userEvents = eventStorage.findAllByInitiatorId(initiator.getId(), pageable).getContent().stream()
                 .map(EventMapper::toEventDto).toList();

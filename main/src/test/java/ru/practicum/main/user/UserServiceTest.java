@@ -70,16 +70,6 @@ public class UserServiceTest {
     }
 
     @Test
-    void testGetUsersWithIncorrectFrom() {
-        Assertions.assertThrows(ValidationException.class, () -> userService.getUsers(null, -3, 1));
-    }
-
-    @Test
-    void testGetUsersWithIncorrectSize() {
-        Assertions.assertThrows(ValidationException.class, () -> userService.getUsers(null, 5, -6));
-    }
-
-    @Test
     void testGetUsersWithListIds() {
         when(userStorage.findAllByIdIn(List.of(1L, 2L))).thenReturn(List.of(user1, user2));
         Assertions.assertEquals(List.of(userDto1, userDto2), userService.getUsers(List.of(1L, 2L), 1, 2));

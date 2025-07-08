@@ -1,5 +1,6 @@
 package ru.practicum.main.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,8 +50,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
-        return new ErrorResponse(ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
+    public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
+        return new ErrorResponse(e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+        return new ErrorResponse("Запрос составлен некорректно");
     }
 
 }

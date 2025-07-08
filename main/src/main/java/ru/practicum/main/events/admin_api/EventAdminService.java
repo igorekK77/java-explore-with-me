@@ -31,9 +31,6 @@ public class EventAdminService {
 
     public List<EventDto> getEvents(List<Long> userIds, List<EventState> states, List<Long> categoryIds, LocalDateTime
             startTime, LocalDateTime endTime, int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException(("Запрос составлен некорректно"));
-        }
         if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
             throw new ValidationException("Даты указаны неправильно!");
         }

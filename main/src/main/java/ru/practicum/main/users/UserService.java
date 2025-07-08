@@ -54,9 +54,6 @@ public class UserService {
         if (ids != null && !ids.isEmpty()) {
             return userStorage.findAllByIdIn(ids).stream().map(UserMapper::toUserDto).toList();
         }
-        if (from < 0 || size < 0) {
-            throw new ValidationException(("Запрос составлен некорректно"));
-        }
 
         return userStorage.findUsersByParams(from, size).stream().map(UserMapper::toUserDto).toList();
     }

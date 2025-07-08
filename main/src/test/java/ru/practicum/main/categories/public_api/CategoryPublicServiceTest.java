@@ -43,11 +43,6 @@ public class CategoryPublicServiceTest {
     }
 
     @Test
-    void testGetCategoriesWithIncorrectParameters() {
-        Assertions.assertThrows(ValidationException.class, () -> categoryPublicService.getCategories(-5, -6));
-    }
-
-    @Test
     void testGetCategories() {
         CategoryDto categoryDto2 = new CategoryDto(2L, "test2");
         Pageable pageable = PageRequest.of(0, 2);
