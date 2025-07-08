@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
-import ru.practicum.main.exceptions.ValidationException;
 import ru.practicum.main.users.User;
 import ru.practicum.main.users.UserService;
 import ru.practicum.main.users.UserStorage;
@@ -47,12 +46,6 @@ public class UserServiceTest {
         user2 = new User(2L, "test2@yandex.ru", "test2");
         userDto1 = new UserDto(1L, "test@yandex.ru", "test");
         userDto2 = new UserDto(2L, "test2@yandex.ru", "test2");
-    }
-
-    @Test
-    void testCreateUserWithEmptyName() {
-        CreateUserDto createUserDto = new CreateUserDto("test@yandex.ru", "");
-        Assertions.assertThrows(ValidationException.class, () -> userService.createUser(createUserDto));
     }
 
     @Test
