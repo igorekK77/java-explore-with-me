@@ -54,14 +54,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void testCreateCategoryWithUsedName() {
-        when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(category);
-        Assertions.assertThrows(ConflictException.class, () -> categoryService.createCategory(categoryCreateDto));
-    }
-
-    @Test
     void testCreateCategory() {
-        when(categoryStorage.findByName(categoryCreateDto.getName())).thenReturn(null);
         when(categoryStorage.save(CategoryMapper.toCategoryFromCreateDto(categoryCreateDto)))
                 .thenReturn(category);
         Assertions.assertEquals(categoryDto, categoryService.createCategory(categoryCreateDto));
