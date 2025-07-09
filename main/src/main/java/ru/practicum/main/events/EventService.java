@@ -87,52 +87,11 @@ public class EventService {
 
     public EventDto updateEvent(Long userId, Long eventId, EventUpdateUserDto eventUpdateDto) {
         User initiator = checkExistsUser(userId);
-        EventDto eventDto = EventMapper.toEventDto(eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
+        Event event = eventStorage.findByIdAndInitiatorId(eventId, userId).orElseThrow(()
                 -> new NotFoundException("Событие с Id: " + eventId + " не найдено для пользователя с Id = "
-                + initiator.getId())));
-        if (eventDto.getState() == EventState.PUBLISHED) {
+                + initiator.getId()));
+        if (event.getState() == EventState.PUBLISHED) {
             throw new ConflictException("Событие уже опубликованное, его нельзя изменить");
-        }
-        if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
-                .plusHours(2))) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
-                    "чем через два часа от текущего момента");
-        }
-        Event event = EventMapper.toEventFromEventDto(eventDto);
-        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().isBlank() &&
-            !eventUpdateDto.getAnnotation().equals(event.getAnnotation())) {
-            event.setAnnotation(eventUpdateDto.getAnnotation());
-        }
-        if (eventUpdateDto.getCategory() != null) {
-            if (categoryStorage.findById(eventUpdateDto.getCategory()).isPresent()) {
-                event.setCategory(categoryStorage.findById(eventUpdateDto.getCategory()).get());
-            }
-        }
-        if (eventUpdateDto.getEventDate() != null) {
-            event.setEventDate(eventUpdateDto.getEventDate());
-        }
-        if (eventUpdateDto.getLocation() != null) {
-            if (eventUpdateDto.getLocation().getLat() != null) {
-                event.setLocationLat(eventUpdateDto.getLocation().getLat());
-            }
-            if (eventUpdateDto.getLocation().getLon() != null) {
-                event.setLocationLon(eventUpdateDto.getLocation().getLon());
-            }
-        }
-        if (eventUpdateDto.getPaid() != null) {
-            event.setPaid(eventUpdateDto.getPaid());
-        }
-        if (eventUpdateDto.getParticipantLimit() != null) {
-            if (eventUpdateDto.getParticipantLimit() < 0) {
-                throw new ValidationException("Лимит пользователей не может быть отрицательным!");
-            }
-            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
-        }
-        if (eventUpdateDto.getRequestModeration() != null) {
-            event.setRequestModeration(eventUpdateDto.getRequestModeration());
-        }
-        if (eventUpdateDto.getTitle() != null) {
-            event.setTitle(eventUpdateDto.getTitle());
         }
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() ==
                 StateActionUser.CANCEL_REVIEW) {
@@ -142,6 +101,7 @@ public class EventService {
                 StateActionUser.SEND_TO_REVIEW) {
             event.setState(EventState.PENDING);
         }
+        applyUpdateEvent(event, eventUpdateDto);
         Event updatedEvent = eventStorage.save(event);
         return searchStatistics(List.of(EventMapper.toEventDto(updatedEvent))).getFirst();
     }
@@ -256,17 +216,8 @@ public class EventService {
     }
 
     public EventDto updateEvent(Long eventId, EventUpdateAdminDto eventUpdateDto) {
-        EventDto eventDto = EventMapper.toEventDto(eventStorage.findById(eventId).orElseThrow(() ->
-                new NotFoundException("Событие с ID = " + eventId + " не найдено!")));
-        Event event = EventMapper.toEventFromEventDto(eventDto);
-        if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
-                .plusHours(2))) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
-                    "чем через два часа от текущего момента");
-        }
-        if (eventUpdateDto.getEventDate() != null) {
-            event.setEventDate(eventUpdateDto.getEventDate());
-        }
+        Event event = eventStorage.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с ID = " + eventId + " не найдено!"));
         if (eventUpdateDto.getStateAction() != null && eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
             if (event.getState() == EventState.PENDING) {
                 event.setState(EventState.PUBLISHED);
@@ -283,39 +234,7 @@ public class EventService {
                 throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }
         }
-        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().equals(event.getAnnotation())) {
-            event.setAnnotation(eventUpdateDto.getAnnotation());
-        }
-        if (eventUpdateDto.getCategory() != null && !eventUpdateDto.getCategory().equals(event.getCategory().getId())) {
-            event.setCategory(categoryStorage.findById(eventUpdateDto.getCategory()).orElseThrow(() ->
-                    new NotFoundException("Категория с ID = " + eventUpdateDto.getCategory() + " не найдена!")));
-        }
-        if (eventUpdateDto.getDescription() != null && !eventUpdateDto.getDescription().equals(event
-                .getDescription())) {
-            event.setDescription(eventUpdateDto.getDescription());
-        }
-        if (eventUpdateDto.getLocation() != null && !eventUpdateDto.getLocation().getLat().equals(event
-                .getLocationLat())) {
-            event.setLocationLat(eventUpdateDto.getLocation().getLat());
-        }
-        if (eventUpdateDto.getLocation() != null && !eventUpdateDto.getLocation().getLon().equals(event
-                .getLocationLon())) {
-            event.setLocationLon(eventUpdateDto.getLocation().getLon());
-        }
-        if (eventUpdateDto.getPaid() != null && !eventUpdateDto.getPaid().equals(event.isPaid())) {
-            event.setPaid(eventUpdateDto.getPaid());
-        }
-        if (eventUpdateDto.getParticipantLimit() != null && !eventUpdateDto.getParticipantLimit().equals(event
-                .getParticipantLimit())) {
-            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
-        }
-        if (eventUpdateDto.getRequestModeration() != null && !eventUpdateDto.getRequestModeration().equals(event
-                .isRequestModeration())) {
-            event.setRequestModeration(eventUpdateDto.getRequestModeration());
-        }
-        if (eventUpdateDto.getTitle() != null && !eventUpdateDto.getTitle().equals(event.getTitle())) {
-            event.setTitle(eventUpdateDto.getTitle());
-        }
+        applyUpdateEvent(event, eventUpdateDto);
         Event updateEvent = eventStorage.save(event);
         return EventMapper.toEventDto(updateEvent);
     }
@@ -400,7 +319,7 @@ public class EventService {
                 userId + "не найден!"));
     }
 
-    public List<EventDto> searchStatistics(List<EventDto> events) {
+    private List<EventDto> searchStatistics(List<EventDto> events) {
         List<String> uris = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .toList();
@@ -416,6 +335,50 @@ public class EventService {
             }
         }
         return events;
+    }
+
+    private void applyUpdateEvent(Event event, EventUpdateDto eventUpdateDto) {
+        if (eventUpdateDto.getEventDate() != null && eventUpdateDto.getEventDate().isBefore(LocalDateTime.now()
+                .plusHours(2))) {
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
+                    "чем через два часа от текущего момента");
+        }
+        if (eventUpdateDto.getEventDate() != null) {
+            event.setEventDate(eventUpdateDto.getEventDate());
+        }
+        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().equals(event.getAnnotation())) {
+            event.setAnnotation(eventUpdateDto.getAnnotation());
+        }
+        if (eventUpdateDto.getCategory() != null && !eventUpdateDto.getCategory().equals(event.getCategory().getId())) {
+            event.setCategory(categoryStorage.findById(eventUpdateDto.getCategory()).orElseThrow(() ->
+                    new NotFoundException("Категория с ID = " + eventUpdateDto.getCategory() + " не найдена!")));
+        }
+        if (eventUpdateDto.getDescription() != null && !eventUpdateDto.getDescription().equals(event
+                .getDescription())) {
+            event.setDescription(eventUpdateDto.getDescription());
+        }
+        if (eventUpdateDto.getLocation() != null) {
+            if (eventUpdateDto.getLocation().getLat() != null) {
+                event.setLocationLat(eventUpdateDto.getLocation().getLat());
+            }
+            if (eventUpdateDto.getLocation().getLon() != null) {
+                event.setLocationLon(eventUpdateDto.getLocation().getLon());
+            }
+        }
+        if (eventUpdateDto.getPaid() != null && !eventUpdateDto.getPaid().equals(event.isPaid())) {
+            event.setPaid(eventUpdateDto.getPaid());
+        }
+        if (eventUpdateDto.getParticipantLimit() != null && !eventUpdateDto.getParticipantLimit().equals(event
+                .getParticipantLimit())) {
+            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
+        }
+        if (eventUpdateDto.getRequestModeration() != null && !eventUpdateDto.getRequestModeration().equals(event
+                .isRequestModeration())) {
+            event.setRequestModeration(eventUpdateDto.getRequestModeration());
+        }
+        if (eventUpdateDto.getTitle() != null && !eventUpdateDto.getTitle().equals(event.getTitle())) {
+            event.setTitle(eventUpdateDto.getTitle());
+        }
     }
 
 }
