@@ -205,14 +205,14 @@ public class EventService {
         return new ConfirmedAndRejectedRequestsDto(confirmedRequests, rejectedRequests);
     }
 
-    public List<EventDto> getAdminEvents(EventAdminParametersDto eventAdminParametersDto) {
-        List<Long> userIds = eventAdminParametersDto.getUsers();
-        List<EventState> states = eventAdminParametersDto.getStates();
-        List<Long> categoryIds = eventAdminParametersDto.getCategories();
-        LocalDateTime startTime = eventAdminParametersDto.getStartTime();
-        LocalDateTime endTime = eventAdminParametersDto.getEndTime();
-        int from = eventAdminParametersDto.getFrom();
-        int size = eventAdminParametersDto.getSize();
+    public List<EventDto> getAdminEvents(EventParametersDto eventParametersDto) {
+        List<Long> userIds = eventParametersDto.getUsers();
+        List<EventState> states = eventParametersDto.getStates();
+        List<Long> categoryIds = eventParametersDto.getCategories();
+        LocalDateTime startTime = eventParametersDto.getStartTime();
+        LocalDateTime endTime = eventParametersDto.getEndTime();
+        int from = eventParametersDto.getFrom();
+        int size = eventParametersDto.getSize();
 
         if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
             throw new ValidationException("Даты указаны неправильно!");
@@ -320,17 +320,17 @@ public class EventService {
         return EventMapper.toEventDto(updateEvent);
     }
 
-    public List<EventPublicDto> getPublicEvents(EventPublicParametersDto eventPublicParametersDto) {
-        String text = eventPublicParametersDto.getText();
-        List<Long> categoryIds = eventPublicParametersDto.getCategories();
-        Boolean paid = eventPublicParametersDto.getPaid();
-        LocalDateTime rangeStart = eventPublicParametersDto.getRangeStart();
-        LocalDateTime rangeEnd = eventPublicParametersDto.getRangeEnd();
-        boolean onlyAvailable = eventPublicParametersDto.isOnlyAvailable();
-        SortType sort = eventPublicParametersDto.getSort();
-        int from = eventPublicParametersDto.getFrom();
-        int size = eventPublicParametersDto.getSize();
-        HttpServletRequest httpServletRequest = eventPublicParametersDto.getHttpServletRequest();
+    public List<EventPublicDto> getPublicEvents(EventParametersDto eventParametersDto,
+                                                HttpServletRequest httpServletRequest) {
+        String text = eventParametersDto.getText();
+        List<Long> categoryIds = eventParametersDto.getCategories();
+        Boolean paid = eventParametersDto.getPaid();
+        LocalDateTime rangeStart = eventParametersDto.getStartTime();
+        LocalDateTime rangeEnd = eventParametersDto.getEndTime();
+        boolean onlyAvailable = eventParametersDto.isOnlyAvailable();
+        SortType sort = eventParametersDto.getSort();
+        int from = eventParametersDto.getFrom();
+        int size = eventParametersDto.getSize();
 
         if (text == null) {
             text = "";

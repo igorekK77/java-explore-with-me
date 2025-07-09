@@ -8,8 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.events.EventState;
-import ru.practicum.main.events.dto.EventAdminParametersDto;
 import ru.practicum.main.events.dto.EventDto;
+import ru.practicum.main.events.dto.EventParametersDto;
 import ru.practicum.main.events.dto.EventUpdateAdminDto;
 import ru.practicum.main.events.EventService;
 
@@ -32,9 +32,9 @@ public class EventAdminController {
                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
                                     @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                     @RequestParam(defaultValue = "10") @Positive int size) {
-        EventAdminParametersDto eventAdminParametersDto = new EventAdminParametersDto(users, states, categories,
+        EventParametersDto eventParametersDto = new EventParametersDto(users, states, categories,
                 startTime, endTime, from, size);
-        return eventService.getAdminEvents(eventAdminParametersDto);
+        return eventService.getAdminEvents(eventParametersDto);
     }
 
     @PatchMapping("/{eventId}")

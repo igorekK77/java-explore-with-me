@@ -11,7 +11,7 @@ import ru.practicum.main.events.EventService;
 import ru.practicum.main.events.SortType;
 import ru.practicum.main.events.dto.EventDto;
 import ru.practicum.main.events.dto.EventPublicDto;
-import ru.practicum.main.events.dto.EventPublicParametersDto;
+import ru.practicum.main.events.dto.EventParametersDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,9 +36,9 @@ public class EventPublicController {
                                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                           @RequestParam(defaultValue = "10") @Positive int size,
                                           HttpServletRequest httpServletRequest) {
-        EventPublicParametersDto eventPublicParametersDto = new EventPublicParametersDto(text, categories, paid,
-                rangeStart, rangeEnd, onlyAvailable, sort, from, size, httpServletRequest);
-        return eventService.getPublicEvents(eventPublicParametersDto);
+        EventParametersDto eventParametersDto = new EventParametersDto(text, categories, paid,
+                rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        return eventService.getPublicEvents(eventParametersDto, httpServletRequest);
     }
 
     @GetMapping("/{id}")
