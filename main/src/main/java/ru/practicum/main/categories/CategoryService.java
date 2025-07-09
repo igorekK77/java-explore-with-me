@@ -22,9 +22,6 @@ public class CategoryService {
     private final EventStorage eventStorage;
 
     public CategoryDto createCategory(CategoryCreateDto categoryCreateDto) {
-        if (categoryStorage.findByName(categoryCreateDto.getName()) != null) {
-            throw new ConflictException("Категория " + categoryCreateDto.getName() + " уже существует!");
-        }
         Category category = CategoryMapper.toCategoryFromCreateDto(categoryCreateDto);
         return CategoryMapper.toCategoryDto(categoryStorage.save(category));
     }
