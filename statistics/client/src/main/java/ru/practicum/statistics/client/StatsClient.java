@@ -1,3 +1,5 @@
+package ru.practicum.statistics.client;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -38,8 +40,8 @@ public class StatsClient {
 
     public List<StatisticsDto> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris,
                                              boolean unique) {
-        String startTime = start.format(formatter);
-        String endTime = end.format(formatter);
+        String startTime = start.toString();
+        String endTime = end.toString();
         StringBuilder totalUri = new StringBuilder(baseUri + "/stats" + "?start=" + startTime + "&end=" + endTime);
 
         if (!uris.isEmpty()) {

@@ -8,6 +8,8 @@ import ru.practicum.statistics.dto.CreateStatisticDto;
 import ru.practicum.statistics.dto.CreateStatisticResponseDto;
 import ru.practicum.statistics.dto.StatisticsDto;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +26,18 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<StatisticsDto> getStatistics(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                             LocalDateTime start, @RequestParam @DateTimeFormat(pattern =
+    public List<StatisticsDto> getStatistics(@RequestParam(required = false) @DateTimeFormat(pattern =
+                                                         "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                             @RequestParam(required = false) @DateTimeFormat(pattern =
                                                          "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                              @RequestParam(required = false) List<String> uris,
                                              @RequestParam(defaultValue = "false") boolean unique) {
         if (uris == null) {
             uris = new ArrayList<>();
         }
-        return statsService.getStatistics(start, end, uris, unique);
+        List<String> decodedUris = uris.stream()
+                .map(uri -> URLDecoder.decode(uri, StandardCharsets.UTF_8))
+                .toList();
+        return statsService.getStatistics(start, end, decodedUris, unique);
     }
 }
