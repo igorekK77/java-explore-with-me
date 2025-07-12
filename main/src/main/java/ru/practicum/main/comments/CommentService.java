@@ -109,7 +109,7 @@ public class CommentService {
 
     public void deleteCommentById(Long commentId) {
         Comment comment = commentStorage.findById(commentId).orElseThrow(() -> new NotFoundException("Комментария " +
-                "с ID = " + commentId + " не существует!" ));
+                "с ID = " + commentId + " не существует!"));
         commentStorage.delete(comment);
     }
 }
