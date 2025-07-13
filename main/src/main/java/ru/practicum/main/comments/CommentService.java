@@ -31,12 +31,10 @@ public class CommentService {
                 userId + " не существует!"));
         Event event = eventStorage.findById(eventId).orElseThrow(() -> new NotFoundException("События с ID = " +
                 eventId + " не существует!"));
-        if (event.getState() != EventState.PUBLISHED) {
+        if (event.getState() != EventState.PUBLISHED && event.getState() != EventState.CANCELED) {
             throw new ValidationException("Нельзя оставить комментарий к данному событию!");
         }
-        Comment comment = CommentMapper.toCommentFromCreateDto(commentCreateDto);
-        comment.setUser(user);
-        comment.setEvent(event);
+        Comment comment = CommentMapper.toCommentFromCreateDto(commentCreateDto, user, event);
 
         Comment savedComment = commentStorage.save(comment);
         return CommentMapper.toDto(savedComment);
