@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.categories.Category;
 import ru.practicum.main.categories.CategoryStorage;
+import ru.practicum.main.comments.CommentStorage;
+import ru.practicum.main.comments.dto.CommentDto;
+import ru.practicum.main.comments.dto.CommentMapper;
 import ru.practicum.main.events.dto.*;
 import ru.practicum.main.exceptions.ConflictException;
 import ru.practicum.main.exceptions.NotFoundException;
@@ -27,6 +30,7 @@ import ru.practicum.statistics.dto.StatisticsDto;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +41,7 @@ public class EventService {
     private final CategoryStorage categoryStorage;
     private final StatsClient statsClient;
     private final RequestStorage requestStorage;
+    private final CommentStorage commentStorage;
 
     @Value("${app.service-name}")
     private String appName;
@@ -291,7 +296,16 @@ public class EventService {
             }
         }
         List<EventDto> eventsDto = events.stream().map(EventMapper::toEventDto).toList();
+        List<Long> eventIds = eventsDto.stream().map(EventDto::getId).toList();
+        List<CommentDto> comments = commentStorage.findAllByEventIdIn(eventIds).stream().map(CommentMapper::toDto)
+                .toList();
+        Map<Long, List<CommentDto>> commentMap = comments.stream().collect(Collectors.groupingBy(CommentDto::getEventId));
         eventsDto = searchStatistics(eventsDto);
+        eventsDto.forEach(event -> {
+            List<CommentDto> commentsDto = commentMap.getOrDefault(event.getId(), List.of());
+            event.setComments(commentsDto);
+            event.setCountComments(commentsDto.size());
+        });
 
         if (sort == SortType.EVENT_DATE) {
             return eventsDto.stream().sorted(Comparator.comparing(EventDto::getEventDate))
@@ -310,7 +324,9 @@ public class EventService {
         }
         statsClient.createStats(appName, httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr());
-
+        List<CommentDto> comments = commentStorage.findAllByEventId(eventId).stream().map(CommentMapper::toDto).toList();
+        eventDto.setComments(comments);
+        eventDto.setCountComments(comments.size());
         return searchStatistics(List.of(eventDto)).getFirst();
     }
 

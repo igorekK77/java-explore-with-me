@@ -5,6 +5,7 @@ import ru.practicum.main.events.EventState;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class EventMapper {
 
@@ -35,14 +36,14 @@ public class EventMapper {
                     event.getDescription(), LocalDateTime.parse(event.getEventDate().format(formatter), formatter),
                     event.getInitiator(), new LocationDto(event.getLocationLat(), event.getLocationLon()), event.isPaid(),
                     event.getParticipantLimit(), null,
-                    event.isRequestModeration(), event.getState(), event.getTitle(), 0L);
+                    event.isRequestModeration(), event.getState(), event.getTitle(), 0L, 0, List.of());
         } else {
             eventDto = new EventDto(event.getId(), event.getAnnotation(), event.getCategory(), event.getConfirmedRequests(),
                     LocalDateTime.parse(event.getCreatedOn().format(formatter), formatter),
                     event.getDescription(), LocalDateTime.parse(event.getEventDate().format(formatter), formatter),
                     event.getInitiator(), new LocationDto(event.getLocationLat(), event.getLocationLon()), event.isPaid(),
                     event.getParticipantLimit(), LocalDateTime.parse(event.getPublishedOn().format(formatter), formatter),
-                    event.isRequestModeration(), event.getState(), event.getTitle(), 0L);
+                    event.isRequestModeration(), event.getState(), event.getTitle(), 0L, 0, List.of());
         }
         return eventDto;
     }
@@ -58,12 +59,12 @@ public class EventMapper {
     public static EventPublicDto toEventPublicDto(Event event) {
         return new EventPublicDto(event.getId(), event.getAnnotation(), event.getCategory(),
                 event.getConfirmedRequests(), event.getEventDate(), event.getInitiator(), event.isPaid(),
-                event.getTitle(), 0L);
+                event.getTitle(), 0L, 0, List.of());
     }
 
     public static EventPublicDto toEventPublicDtoFromEventDto(EventDto event) {
         return new EventPublicDto(event.getId(), event.getAnnotation(), event.getCategory(),
                 event.getConfirmedRequests(), event.getEventDate(), event.getInitiator(), event.isPaid(),
-                event.getTitle(), 0L);
+                event.getTitle(), 0L, 0, List.of());
     }
 }

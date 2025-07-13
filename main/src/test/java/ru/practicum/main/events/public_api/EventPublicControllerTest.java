@@ -54,7 +54,7 @@ public class EventPublicControllerTest {
         Category category = new Category(1L, "test");
         User user = new User(1L, "test@yandex.ru", "test");
         eventPublicDto = new EventPublicDto(1L, "test", category, 3, LocalDateTime.now(),
-                user, true, "test", 2L);
+                user, true, "test", 2L, 0, List.of());
         event = new Event(1L, "test", category, 3, LocalDateTime.now(), "testD",
                 LocalDateTime.now().plusWeeks(2), user, 54.32, 45.23, true, 7,
                 LocalDateTime.now().plusDays(2), true, EventState.PUBLISHED, "test");
